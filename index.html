@@ -1,0 +1,521 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width,initial-scale=1" />
+<title>Unblockify — TUFF Games</title>
+
+<link href="https://fonts.googleapis.com/css2?family=Press+Start+2P&display=swap" rel="stylesheet">
+
+<style>
+  /* ---------- variables ---------- */
+  :root{
+    --bg:#000;
+    --fg:#e6f7ff;
+    --glass: rgba(255,255,255,0.04);
+    --glass-2: rgba(255,255,255,0.02);
+    --neon1: #6b4eff;
+    --neon2: #9d4bff;
+    --top-h: 66px;
+  }
+
+  /* ---------- reset ---------- */
+  html,body{height:100%;margin:0;background:var(--bg);color:var(--fg);font-family:Inter,system-ui,-apple-system,Segoe UI,Roboto,"Press Start 2P",monospace; -webkit-font-smoothing:antialiased}
+  a { color:inherit; text-decoration:none; }
+
+  /* ---------- top menu button (left) ---------- */
+  #menuButton {
+    position:fixed; left:14px; top:14px; z-index:2200;
+    width:48px; height:48px; border-radius:12px; display:grid; place-items:center;
+    background: linear-gradient(180deg, rgba(255,255,255,0.02), rgba(255,255,255,0.01));
+    border:1px solid rgba(255,255,255,0.04);
+    color:var(--fg); cursor:pointer; box-shadow: 0 8px 24px rgba(0,0,0,0.6);
+    backdrop-filter: blur(6px) saturate(120%);
+  }
+
+  /* ---------- glass menu (search-bar style) ---------- */
+  #glassWrap {
+    position:fixed; left:0; right:0; top:-160px; height:140px; display:flex; justify-content:center;
+    z-index:2100; transition: top .36s cubic-bezier(.2,.9,.2,1);
+    pointer-events:none;
+  }
+  #glassWrap.open { top:12px; pointer-events:auto; }
+
+  #glassBar {
+    width:92%; max-width:1200px; height:84px; border-radius:48px;
+    background: linear-gradient(180deg, rgba(10,12,20,0.48), rgba(6,6,10,0.34));
+    border: 1px solid rgba(255,255,255,0.06);
+    display:flex; align-items:center; gap:18px; padding:10px 20px; box-sizing:border-box;
+    box-shadow: 0 10px 32px rgba(40, 10, 140, 0.12);
+    backdrop-filter: blur(12px) saturate(120%);
+    position:relative; overflow:hidden;
+  }
+
+  /* neon moving edge */
+  #glassBar::after {
+    content:""; position:absolute; inset:-3px; border-radius:52px; pointer-events:none;
+    background: linear-gradient(90deg, rgba(0,0,0,0), var(--neon1), var(--neon2), rgba(0,0,0,0));
+    filter: blur(18px); opacity:.6; mix-blend-mode:screen;
+    transform: translateX(-80%); animation: neonSlide 6s linear infinite;
+  }
+  @keyframes neonSlide { from { transform: translateX(-80%);} to { transform: translateX(160%);} }
+
+  /* content inside bar */
+  .g-left { display:flex; gap:12px; align-items:center; min-width: 120px; }
+  .g-center { flex:1; display:flex; justify-content:center; align-items:center; gap:18px; pointer-events:auto; }
+  .g-right { display:flex; gap:12px; align-items:center; min-width:120px; justify-content:flex-end; }
+
+  /* nav links */
+  .navLink { color: rgba(255,255,255,0.92); font-size:14px; padding:8px 12px; border-radius:8px; cursor:pointer; opacity:.95; font-family:'Press Start 2P', monospace; letter-spacing: .5px}
+  .navLink:hover { background: rgba(255,255,255,0.02); transform: translateY(-2px); transition: .12s; }
+
+  /* centered clock in menu */
+  #menuClock { font-family:'Press Start 2P'; font-size:13px; color:#dff4ff; text-shadow: 0 0 8px rgba(140,120,255,0.85); }
+
+  /* search input */
+  #menuSearch {
+    width:420px; max-width:38vw; min-width:160px; padding:10px 12px; border-radius:12px;
+    background: rgba(255,255,255,0.02); border: 1px solid rgba(255,255,255,0.04); color:var(--fg);
+    outline:none; font-size:13px;
+    box-shadow: inset 0 0 6px rgba(255,255,255,0.02);
+  }
+  #menuSearch::placeholder { color: #bcd8e8; opacity:.6; font-family:inherit; font-size:12px; }
+
+  /* mini logo */
+  #miniLogo { height:52px; border-radius:8px; }
+
+  /* ---------- header hero (landing) ---------- */
+  header.heroWrap { padding-top: calc(14px + 66px); display:flex; justify-content:center; align-items:flex-start; position:relative; z-index:10 }
+  .hero { width:100%; max-width:1100px; text-align:center; margin-top:12px; padding:28px; box-sizing:border-box; }
+  #heroClock { font-family:'Press Start 2P'; font-size:14px; color:#bfe8ff; margin-bottom:10px; text-shadow:0 0 8px rgba(60,160,255,0.7); }
+  #logoPanel { display:inline-block; padding:28px 34px; border-radius:18px; background: linear-gradient(180deg, rgba(8,8,12,0.66), rgba(4,4,8,0.9)); box-shadow: 0 20px 60px rgba(40,10,140,0.36); border:1px solid rgba(255,255,255,0.03); }
+  #logoPanel img { height:110px; display:block; filter: drop-shadow(0 8px 28px rgba(60,60,255,0.12)); }
+
+  .subtitle { margin-top:10px; font-family:'Press Start 2P'; color:#9edbff; font-size:12px; text-shadow:0 0 8px rgba(140,120,255,0.35) }
+
+  /* hint */
+  .hint { margin-top:12px; color:#9ccfff; font-size:12px; opacity:.85 }
+
+  /* ---------- page sections (virtual pages) ---------- */
+  main { min-height:100vh; display:flex; justify-content:center; padding-bottom:80px; box-sizing:border-box; transition:opacity .36s ease; }
+  .page { width:100%; max-width:1100px; padding:28px; box-sizing:border-box; display:none; opacity:0; transform: translateY(6px); transition:opacity .36s ease, transform .36s ease; }
+  .page.active { display:block; opacity:1; transform: none; }
+
+  /* grid of CRT buttons */
+  .grid { display:grid; grid-template-columns: repeat(auto-fit, minmax(240px,1fr)); gap:16px; }
+  .crtBtn { padding:14px; border-radius:12px; background: linear-gradient(135deg,var(--neon1),var(--neon2)); color:#fff;
+    border:1px solid rgba(255,255,255,0.08); font-family:'Press Start 2P'; letter-spacing:1px; font-size:12px;
+    display:flex; align-items:center; gap:10px; cursor:pointer; min-height:56px; box-shadow: 0 12px 36px rgba(120,60,200,0.12);
+    transition: transform .12s ease, box-shadow .12s ease; overflow:hidden; position:relative;
+  }
+  .crtBtn:hover { transform: translateY(-6px); box-shadow: 0 26px 46px rgba(160,80,255,0.28) }
+  .crtBtn::before { content:""; position:absolute; inset:0; background: repeating-linear-gradient(to bottom, rgba(255,255,255,0.04) 0px, rgba(255,255,255,0.04) 1px, transparent 2px, transparent 4px); mix-blend-mode: overlay; pointer-events:none; }
+
+  /* search results / thumbnails */
+  .thumb { display:flex; gap:12px; align-items:center; }
+  .thumb .img { width:68px; height:48px; border-radius:8px; background:#111; display:inline-block; }
+
+  /* suggestion form */
+  .form input, .form textarea { width:100%; padding:12px; border-radius:10px; background: rgba(255,255,255,0.02); border:1px solid rgba(255,255,255,0.04); color:var(--fg); margin-bottom:8px; font-size:13px }
+  .form button { padding:12px; border-radius:10px; border:none; cursor:pointer; background: linear-gradient(135deg,var(--neon1),var(--neon2)); color:#fff; font-family:'Press Start 2P'; }
+
+  /* ---------- game loader (fullscreen iframe + retro loader) ---------- */
+  #gameShell { position:fixed; inset:0; display:none; z-index:3000; background:#000; }
+  #gameShell.active { display:block; }
+  #gameTop { position:fixed; left:12px; top:12px; z-index:3010; display:flex; gap:8px; align-items:center; }
+  #gameTop button { padding:8px 10px; border-radius:8px; background: rgba(255,255,255,0.03); border:1px solid rgba(255,255,255,0.04); color:#fff; cursor:pointer; font-family:'Press Start 2P'; font-size:11px }
+
+  #gameFrame { position:fixed; inset:0; border:none; width:100%; height:100%; background:#000; }
+
+  /* retro loader overlay */
+  #retroLoader { position:fixed; inset:0; display:flex; align-items:center; justify-content:center; z-index:3050; background: radial-gradient(circle at center, rgba(255,255,255,0.02), rgba(0,0,0,0.9)); color:#9de5ff; font-family:'Press Start 2P'; font-size:14px; flex-direction:column; gap:12px; opacity:0; pointer-events:none; transition:opacity .18s ease; }
+  #retroLoader.show { opacity:1; pointer-events:auto; }
+  .bootLine { font-size:12px; color:#bfe9ff; text-shadow:0 0 8px rgba(120,160,255,0.4); opacity:.95 }
+  .loadBar { width:320px; max-width:70%; height:12px; border-radius:8px; background: rgba(255,255,255,0.04); overflow:hidden; border:1px solid rgba(255,255,255,0.03); }
+  .loadFill { height:100%; width:0%; background: linear-gradient(90deg,var(--neon1),var(--neon2)); transition: width .8s ease; box-shadow: 0 8px 20px rgba(110,60,220,0.2) }
+
+  /* ---------- CRT theme (toggleable overlay effects) ---------- */
+  .crt-scanlines::after{
+    content:""; position:fixed; inset:0; pointer-events:none; background: repeating-linear-gradient(to bottom, rgba(255,255,255,0.03) 0px, rgba(255,255,255,0.03) 1px, transparent 2px, transparent 4px); mix-blend-mode: overlay; opacity:.65; z-index:5000;
+  }
+  .crt-vignette::before{
+    content:""; position:fixed; inset:0; pointer-events:none; background: radial-gradient(ellipse at center, rgba(255,255,255,0.02), rgba(0,0,0,0.8) 60%); z-index:4999; mix-blend-mode:multiply;
+  }
+  .crt-glow *{ text-shadow:0 0 8px rgba(120,100,255,0.6) }
+  .crt-chrome { filter: hue-rotate(4deg) saturate(120%); }
+
+  /* ---------- small responsive ---------- */
+  @media (max-width:720px){
+    #menuSearch{ width: 46vw; }
+    #glassBar { padding:10px 12px; height:76px }
+    #miniLogo { height:40px }
+    .navLink{ font-size:12px }
+  }
+</style>
+</head>
+<body>
+
+<!-- menu button -->
+<button id="menuButton" aria-label="Open menu">☰</button>
+
+<!-- glass menu (search-bar style) -->
+<div id="glassWrap" aria-hidden="true">
+  <div id="glassBar" role="navigation" aria-label="Main menu">
+    <div class="g-left">
+      <div class="navLink" data-nav="home">HOME</div>
+      <div class="navLink" data-nav="games">GAMES</div>
+      <div class="navLink" data-nav="apps">APPS</div>
+    </div>
+
+    <div class="g-center">
+      <input id="menuSearch" placeholder="Search games or apps..." aria-label="Search" />
+      <div id="menuClock">--:-- --</div>
+    </div>
+
+    <div class="g-right">
+      <div class="navLink" data-nav="suggest">SUGGEST</div>
+      <img id="miniLogo" src="https://i.imgur.com/LnWVyXS.png" alt="logo">
+    </div>
+  </div>
+</div>
+
+<!-- hero landing -->
+<header class="heroWrap">
+  <div class="hero" id="homePage">
+    <div id="heroClock">--:-- --</div>
+    <div id="logoPanel" role="img" aria-label="Unblockify logo"><img src="https://i.imgur.com/LnWVyXS.png" alt="logo"></div>
+    <div class="subtitle">THE TUFFEST GAME SITE AROUND</div>
+    <div class="hint">Scroll or use the menu to explore games, apps, and suggestions ↓</div>
+  </div>
+</header>
+
+<main id="appMain" aria-live="polite">
+  <!-- Games page -->
+  <section class="page" id="gamesPage" aria-label="Games">
+    <h3 style="font-family:'Press Start 2P'; text-align:center">Games</h3>
+    <div style="max-width:1100px; margin:12px auto 18px;">
+      <input id="gamesSearchTop" placeholder="Filter games..." style="width:100%;padding:12px;border-radius:10px;border:1px solid rgba(255,255,255,0.04); background:rgba(255,255,255,0.02); color:inherit">
+    </div>
+    <div id="gamesGrid" class="grid" style="max-width:1100px;margin:0 auto;"></div>
+  </section>
+
+  <!-- Apps page -->
+  <section class="page" id="appsPage" aria-label="Apps">
+    <h3 style="font-family:'Press Start 2P'; text-align:center">Apps</h3>
+    <div style="max-width:1100px; margin:12px auto 18px;">
+      <input id="appsSearchTop" placeholder="Filter apps..." style="width:100%;padding:12px;border-radius:10px;border:1px solid rgba(255,255,255,0.04); background:rgba(255,255,255,0.02); color:inherit">
+    </div>
+    <div id="appsGrid" class="grid" style="max-width:1100px; margin:0 auto;"></div>
+  </section>
+
+  <!-- Suggest page -->
+  <section class="page" id="suggestPage" aria-label="Suggestions">
+    <h3 style="font-family:'Press Start 2P'; text-align:center">Suggestion Box</h3>
+    <div style="max-width:840px;margin:0 auto;padding:12px;">
+      <div class="form">
+        <input id="s-name" placeholder="Name (optional)">
+        <input id="s-email" placeholder="Email (optional)">
+        <textarea id="s-text" rows="6" placeholder="What would you like to suggest?"></textarea>
+        <div style="display:flex; gap:12px;">
+          <button id="s-send">Send</button>
+          <button id="s-clear" style="background:rgba(255,255,255,0.03); color:#fff">Clear</button>
+        </div>
+        <div id="s-note" style="margin-top:8px;color:#bfeeff"></div>
+      </div>
+    </div>
+  </section>
+</main>
+
+<!-- game shell & loader -->
+<div id="gameShell" aria-hidden="true">
+  <div id="gameTop">
+    <button id="backBtn">← Back</button>
+    <button id="crtToggle">CRT</button>
+  </div>
+
+  <iframe id="gameFrame" title="Game frame" sandbox="allow-scripts allow-same-origin allow-forms allow-popups"></iframe>
+
+  <div id="retroLoader" role="status" aria-live="polite">
+    <div class="bootLine">BOOTING SYSTEM...</div>
+    <div class="loadBar"><div class="loadFill"></div></div>
+    <div class="bootLine">INITIALIZING RENDERER</div>
+  </div>
+</div>
+
+<!-- ---------- JS (app logic) ---------- -->
+<script>
+/* ---------- Data: games/apps ---------- */
+const GAMES = [
+  { name: "Retro Bowl", url: "https://y4b01m4tt.github.io/curly-journey/" },
+  { name: "CrazyCattle3D", url: "https://y4b01m4tt.github.io/improved-octo-succotash/" },
+  { name: "Cookie Clicker", url: "https://y4b01m4tt.github.io/jubilant-dollop/" },
+  { name: "Drive Mad", url: "https://y4b01m4tt.github.io/stunning-eureka/" },
+  { name: "Drift Hunters", url: "https://y4b01m4tt.github.io/cuddly-invention/" },
+  { name: "Minesweeper", url: "https://nickarocho.github.io/minesweeper/" },
+  { name: "Eaglercraft", url: "https://y4b01m4tt.github.io/ubiquitous-enigma/" },
+  { name: "NZ: Portable", url: "https://rawcdn.githack.com/gn-math/assets/main/308/" },
+  { name: "Idle Dice", url: "https://y4b01m4tt.github.io/scaling-spork/" },
+  { name: "Idle Breakout", url: "https://y4b01m4tt.github.io/reimagined-parakeet/" },
+  { name: "Drag Racer V3", url: "https://y4b01m4tt.github.io/jubilant-fishstick/" },
+  { name: "Tiny Fishing", url: "https://y4b01m4tt.github.io/automatic-garbanzo/" },
+  { name: "Bacon May Die", url: "https://y4b01m4tt.github.io/automatic-dollop/" },
+  { name: "Friday Night Funkin'", url: "https://y4b01m4tt.github.io/shiny-lamp/" },
+  { name: "1v1.lol", url: "https://y4b01m4tt.github.io/scaling-octo-barnacle/" },
+  { name: "Vex 3", url: "https://y4b01m4tt.github.io/probable-robot/" }
+];
+
+const APPS = [
+  // reuse a couple as examples
+  { name: "Eaglercraft", url: "https://y4b01m4tt.github.io/ubiquitous-enigma/" },
+  { name: "Vex 3", url: "https://y4b01m4tt.github.io/probable-robot/" }
+];
+
+/* ---------- elements ---------- */
+const menuButton = document.getElementById('menuButton');
+const glassWrap = document.getElementById('glassWrap');
+const navLinks = [...document.querySelectorAll('.navLink')];
+const menuSearch = document.getElementById('menuSearch');
+const menuClock = document.getElementById('menuClock');
+const heroClock = document.getElementById('heroClock');
+
+const pages = {
+  home: document.getElementById('homePage'),
+  games: document.getElementById('gamesPage'),
+  apps: document.getElementById('appsPage'),
+  suggest: document.getElementById('suggestPage')
+};
+const gamesGrid = document.getElementById('gamesGrid');
+const appsGrid = document.getElementById('appsGrid');
+const gamesSearchTop = document.getElementById('gamesSearchTop');
+
+/* ---------- utility: show page with fade ---------- */
+function showPage(key){
+  // fade out visible pages then fade in target
+  Object.values(pages).forEach(p=>{ p.classList.remove('active'); });
+  const page = pages[key];
+  if(!page) return;
+  page.classList.add('active');
+  // scroll to top
+  window.scrollTo({ top: 0, behavior: 'smooth' });
+}
+
+/* ---------- menu open/close ---------- */
+menuButton.addEventListener('click', ()=> {
+  const open = glassWrap.classList.toggle('open');
+  glassWrap.setAttribute('aria-hidden', (!open).toString());
+  if(open) menuSearch.focus();
+});
+
+/* click nav items */
+navLinks.forEach(n=>{
+  n.addEventListener('click', ()=> {
+    const target = n.getAttribute('data-nav');
+    if(target === 'home') showPage('home');
+    if(target === 'games') showPage('games');
+    if(target === 'apps') showPage('apps');
+    if(target === 'suggest') showPage('suggest');
+    glassWrap.classList.remove('open');
+  });
+});
+
+/* close menu clicking outside */
+document.addEventListener('click', (e)=>{
+  if(!glassWrap.classList.contains('open')) return;
+  const inside = glassWrap.contains(e.target) || menuButton.contains(e.target);
+  if(!inside) glassWrap.classList.remove('open');
+});
+
+/* ---------- clock (12-hour) ---------- */
+function updateClock(){
+  const d = new Date();
+  let h = d.getHours();
+  const m = String(d.getMinutes()).padStart(2,'0');
+  const ampm = h >= 12 ? 'PM' : 'AM';
+  h = h % 12; if(h===0) h=12;
+  const txt = `${h}:${m} ${ampm}`;
+  menuClock.textContent = txt;
+  heroClock.textContent = txt;
+}
+setInterval(updateClock, 1000);
+updateClock();
+
+/* ---------- render lists ---------- */
+function makeBtn(item){
+  const b = document.createElement('button');
+  b.className = 'crtBtn';
+  b.innerHTML = `<svg viewBox="0 0 20 20" style="width:18px;height:18px"><path d="M3 10l4-4v3h4V2l4 4v14H3V10z"/></svg><span style="position:relative;z-index:2">${item.name}</span>`;
+  b.addEventListener('click', ()=> launchGame(item));
+  return b;
+}
+function renderGames(list){
+  gamesGrid.innerHTML = '';
+  list.forEach(g => gamesGrid.appendChild(makeBtn(g)));
+}
+function renderApps(list){
+  appsGrid.innerHTML = '';
+  list.forEach(a => {
+    const b = document.createElement('button'); b.className='crtBtn';
+    b.innerHTML = `<svg viewBox="0 0 20 20" style="width:18px;height:18px"><path d="M3 10l4-4v3h4V2l4 4v14H3V10z"/></svg><span style="position:relative;z-index:2">${a.name}</span>`;
+    b.addEventListener('click', ()=> launchGame(a));
+    appsGrid.appendChild(b);
+  });
+}
+renderGames(GAMES);
+renderApps(APPS);
+
+/* ---------- search system (menuSearch filters both) ---------- */
+function filterAll(q){
+  q = q.trim().toLowerCase();
+  const gFiltered = GAMES.filter(g => g.name.toLowerCase().includes(q));
+  const aFiltered = APPS.filter(a => a.name.toLowerCase().includes(q));
+  renderGames(gFiltered);
+  renderApps(aFiltered);
+  // automatically navigate to games page if results and menu is open
+  if(q.length) showPage('games');
+}
+menuSearch.addEventListener('input', ()=> filterAll(menuSearch.value));
+gamesSearchTop && gamesSearchTop.addEventListener('input', ()=> {
+  const q = gamesSearchTop.value.trim().toLowerCase();
+  const filtered = GAMES.filter(g => g.name.toLowerCase().includes(q));
+  renderGames(filtered);
+});
+
+/* ---------- game loader: fullscreen iframe with retro loader ---------- */
+const gameShell = document.getElementById('gameShell');
+const gameFrame = document.getElementById('gameFrame');
+const retroLoader = document.getElementById('retroLoader');
+const loadFill = retroLoader.querySelector('.loadFill');
+const backBtn = document.getElementById('backBtn');
+const crtToggle = document.getElementById('crtToggle');
+
+let crtEnabled = false;
+const CRT_CLASS = 'crt-scanlines crt-vignette crt-glow crt-chrome';
+
+/* open game: show loader, animate boot then set iframe src */
+function launchGame(item){
+  // show loader
+  gameShell.classList.add('active');
+  gameShell.setAttribute('aria-hidden','false');
+  retroLoader.classList.add('show');
+  loadFill.style.width = '0%';
+
+  // tiny boot sequence
+  setTimeout(()=> loadFill.style.width = '28%', 80);
+  setTimeout(()=> loadFill.style.width = '62%', 420);
+  setTimeout(()=> loadFill.style.width = '92%', 900);
+
+  // after a short retro boot, load iframe
+  setTimeout(()=> {
+    try {
+      gameFrame.src = item.url;
+    } catch(e){
+      console.error('Failed to set iframe:', e);
+      gameFrame.src = item.url;
+    }
+    // hide loader after iframe first paint (best-effort) + small delay
+    const finish = ()=> {
+      retroLoader.classList.remove('show');
+      loadFill.style.width = '100%';
+      // hide loader fully after brief time
+      setTimeout(()=> retroLoader.classList.remove('show'), 220);
+    };
+    // try listening to load
+    gameFrame.addEventListener('load', finish, { once:true });
+    // ensure finish eventually
+    setTimeout(finish, 2200);
+  }, 1200);
+
+  // hide other UI (fade)
+  document.querySelector('main').style.opacity = '0';
+  document.querySelector('main').style.pointerEvents = 'none';
+  document.querySelector('.heroWrap').style.opacity = '0';
+
+  // allow ESC to close
+}
+
+/* back button */
+backBtn.addEventListener('click', closeGame);
+function closeGame(){
+  gameFrame.src = 'about:blank';
+  gameShell.classList.remove('active');
+  retroLoader.classList.remove('show');
+  document.querySelector('main').style.opacity = '1';
+  document.querySelector('main').style.pointerEvents = '';
+  document.querySelector('.heroWrap').style.opacity = '1';
+  showPage('home');
+}
+
+/* toggle CRT on/off while in game */
+crtToggle.addEventListener('click', ()=> {
+  crtEnabled = !crtEnabled;
+  if(crtEnabled) document.body.classList.add(...CRT_CLASS.split(' '));
+  else document.body.classList.remove('crt-scanlines','crt-vignette','crt-glow','crt-chrome');
+});
+
+/* keyboard: Esc closes game or menu */
+document.addEventListener('keydown', (e)=> {
+  if(e.key === 'Escape'){
+    if(gameShell.classList.contains('active')) closeGame();
+    else if(glassWrap.classList.contains('open')) glassWrap.classList.remove('open');
+  }
+});
+
+/* ---------- suggestion send ---------- */
+document.getElementById('s-send').addEventListener('click', ()=>{
+  const name = document.getElementById('s-name').value.trim();
+  const email = document.getElementById('s-email').value.trim();
+  const text = document.getElementById('s-text').value.trim();
+  const note = document.getElementById('s-note');
+  if(!text){ note.textContent = 'Please write your suggestion.'; return; }
+  // For now: console + local cache
+  console.log('Suggestion:', { name, email, text });
+  note.textContent = 'Thanks — suggestion saved locally.';
+  // optionally save to localStorage (persist)
+  const store = JSON.parse(localStorage.getItem('unblockify_suggestions') || '[]');
+  store.push({ name, email, text, time: Date.now() });
+  localStorage.setItem('unblockify_suggestions', JSON.stringify(store));
+  document.getElementById('s-name').value=''; document.getElementById('s-email').value=''; document.getElementById('s-text').value='';
+  setTimeout(()=> note.textContent = '', 4000);
+});
+
+/* ---------- initial page state ---------- */
+showPage('home');
+
+/* ---------- accessibility: focus search on open ---------- */
+menuSearch.addEventListener('keydown', (e) => {
+  if(e.key === 'Enter') {
+    filterAll(menuSearch.value);
+  }
+});
+
+/* helper for search used by Enter */
+function filterAll(q){ menuSearch.value = q; filterAllInner(q); }
+function filterAllInner(q){
+  q = q.trim().toLowerCase();
+  renderGames(GAMES.filter(g=> g.name.toLowerCase().includes(q)));
+  renderApps(APPS.filter(a=> a.name.toLowerCase().includes(q)));
+  if(q) showPage('games');
+}
+
+/* helper re-render functions used earlier */
+function renderGames(list){
+  gamesGrid.innerHTML = '';
+  list.forEach(g => gamesGrid.appendChild(makeBtn(g)));
+}
+function makeBtn(g){
+  const btn = document.createElement('button');
+  btn.className = 'crtBtn';
+  btn.innerHTML = `<svg viewBox="0 0 20 20" style="width:18px;height:18px"><path d="M3 10l4-4v3h4V2l4 4v14H3V10z"/></svg><span style="position:relative;z-index:2">${g.name}</span>`;
+  btn.addEventListener('click', ()=> launchGame(g));
+  return btn;
+}
+
+/* make initial renders */
+renderGames(GAMES);
+renderApps(APPS);
+
+/* small optimization: close glass menu on resize */
+window.addEventListener('resize', ()=> glassWrap.classList.remove('open'));
+</script>
+</body>
+</html>
