@@ -3,27 +3,26 @@
 <head>
 <meta charset="utf-8" />
 <meta name="viewport" content="width=device-width,initial-scale=1" />
-<title>Unblockify — Home</title>
+<title>Unblockify — TUFF Games</title>
 
+<!-- Retro-ish font -->
 <link href="https://fonts.googleapis.com/css2?family=Press+Start+2P&display=swap" rel="stylesheet">
 
 <style>
-  /* ---------- variables ---------- */
   :root{
     --bg:#000;
     --fg:#e6f7ff;
     --glass: rgba(255,255,255,0.04);
-    --glass-2: rgba(255,255,255,0.02);
-    --neon1: #6b4eff;
-    --neon2: #9d4bff;
+    --neon-a: #00aaff; /* main blue */
+    --neon-b: #00d4ff; /* accent blue */
     --top-h: 66px;
   }
 
-  /* ---------- reset ---------- */
+  /* Reset */
   html,body{height:100%;margin:0;background:var(--bg);color:var(--fg);font-family:Inter,system-ui,-apple-system,Segoe UI,Roboto,"Press Start 2P",monospace; -webkit-font-smoothing:antialiased}
-  a { color:inherit; text-decoration:none; }
+  a{color:inherit;text-decoration:none}
 
-  /* ---------- top menu button (left) ---------- */
+  /* Menu button top-left */
   #menuButton {
     position:fixed; left:14px; top:14px; z-index:2200;
     width:48px; height:48px; border-radius:12px; display:grid; place-items:center;
@@ -33,122 +32,103 @@
     backdrop-filter: blur(6px) saturate(120%);
   }
 
-  /* ---------- glass menu (search-bar style) ---------- */
+  /* Glass menu wrapper (hidden above) */
   #glassWrap {
     position:fixed; left:0; right:0; top:-160px; height:140px; display:flex; justify-content:center;
-    z-index:2100; transition: top .36s cubic-bezier(.2,.9,.2,1);
-    pointer-events:none;
+    z-index:2100; transition: top .36s cubic-bezier(.2,.9,.2,1); pointer-events:none;
   }
   #glassWrap.open { top:12px; pointer-events:auto; }
 
+  /* The glass search-bar style */
   #glassBar {
     width:92%; max-width:1200px; height:84px; border-radius:48px;
     background: linear-gradient(180deg, rgba(10,12,20,0.48), rgba(6,6,10,0.34));
     border: 1px solid rgba(255,255,255,0.06);
     display:flex; align-items:center; gap:18px; padding:10px 20px; box-sizing:border-box;
-    box-shadow: 0 10px 32px rgba(40, 10, 140, 0.12);
-    backdrop-filter: blur(12px) saturate(120%);
-    position:relative; overflow:hidden;
+    box-shadow: 0 10px 32px rgba(20, 40, 90, 0.12);
+    backdrop-filter: blur(12px) saturate(120%); position:relative; overflow:hidden;
   }
 
-  /* neon moving edge */
+  /* moving neon edge */
   #glassBar::after {
     content:""; position:absolute; inset:-3px; border-radius:52px; pointer-events:none;
-    background: linear-gradient(90deg, rgba(0,0,0,0), var(--neon1), var(--neon2), rgba(0,0,0,0));
-    filter: blur(18px); opacity:.6; mix-blend-mode:screen;
-    transform: translateX(-80%); animation: neonSlide 6s linear infinite;
+    background: linear-gradient(90deg, rgba(0,0,0,0), var(--neon-a), var(--neon-b), rgba(0,0,0,0));
+    filter: blur(18px); opacity:.75; mix-blend-mode:screen;
+    transform: translateX(-90%); animation: neonSlide 6s linear infinite;
   }
-  @keyframes neonSlide { from { transform: translateX(-80%);} to { transform: translateX(160%);} }
+  @keyframes neonSlide { from { transform: translateX(-90%);} to { transform: translateX(160%);} }
 
-  /* content inside bar */
-  .g-left { display:flex; gap:12px; align-items:center; min-width: 120px; }
-  .g-center { flex:1; display:flex; justify-content:center; align-items:center; gap:18px; pointer-events:auto; }
-  .g-right { display:flex; gap:12px; align-items:center; min-width:120px; justify-content:flex-end; }
+  .g-left{ display:flex; gap:12px; align-items:center; min-width:120px; }
+  .g-center{ flex:1; display:flex; justify-content:center; align-items:center; gap:18px; pointer-events:auto; }
+  .g-right{ display:flex; gap:12px; align-items:center; min-width:120px; justify-content:flex-end; }
 
-  /* nav links */
-  .navLink { color: rgba(255,255,255,0.92); font-size:14px; padding:8px 12px; border-radius:8px; cursor:pointer; opacity:.95; font-family:'Press Start 2P', monospace; letter-spacing: .5px}
-  .navLink:hover { background: rgba(255,255,255,0.02); transform: translateY(-2px); transition: .12s; }
+  .navLink{ color: rgba(255,255,255,0.95); font-size:13px; padding:8px 12px; border-radius:8px; cursor:pointer; font-family:'Press Start 2P'; letter-spacing:.6px }
+  .navLink:hover{ background: rgba(255,255,255,0.02); transform:translateY(-2px); transition:.12s }
 
-  /* centered clock in menu */
-  #menuClock { font-family:'Press Start 2P'; font-size:13px; color:#dff4ff; text-shadow: 0 0 8px rgba(140,120,255,0.85); }
+  #menuClock{ font-family:'Press Start 2P'; font-size:13px; color:#dff4ff; text-shadow:0 0 8px rgba(0,170,255,0.8) }
 
-  /* search input */
-  #menuSearch {
-    width:420px; max-width:38vw; min-width:160px; padding:10px 12px; border-radius:12px;
-    background: rgba(255,255,255,0.02); border: 1px solid rgba(255,255,255,0.04); color:var(--fg);
-    outline:none; font-size:13px;
-    box-shadow: inset 0 0 6px rgba(255,255,255,0.02);
+  #menuSearch{
+    width:420px; max-width:38vw; min-width:140px; padding:10px 12px; border-radius:12px;
+    background: rgba(255,255,255,0.02); border:1px solid rgba(255,255,255,0.04); color:var(--fg);
+    outline:none; font-size:13px; box-shadow: inset 0 0 6px rgba(255,255,255,0.02)
   }
-  #menuSearch::placeholder { color: #bcd8e8; opacity:.6; font-family:inherit; font-size:12px; }
+  #menuSearch::placeholder{ color:#bcd8e8; opacity:.6; }
 
-  /* mini logo */
-  #miniLogo { height:52px; border-radius:8px; }
+  #miniLogo{ height:52px; border-radius:8px; }
 
-  /* ---------- header hero (landing) ---------- */
-  header.heroWrap { padding-top: calc(14px + 66px); display:flex; justify-content:center; align-items:flex-start; position:relative; z-index:10 }
-  .hero { width:100%; max-width:1100px; text-align:center; margin-top:12px; padding:28px; box-sizing:border-box; }
-  #heroClock { font-family:'Press Start 2P'; font-size:14px; color:#bfe8ff; margin-bottom:10px; text-shadow:0 0 8px rgba(60,160,255,0.7); }
-  #logoPanel { display:inline-block; padding:28px 34px; border-radius:18px; background: linear-gradient(180deg, rgba(8,8,12,0.66), rgba(4,4,8,0.9)); box-shadow: 0 20px 60px rgba(40,10,140,0.36); border:1px solid rgba(255,255,255,0.03); }
-  #logoPanel img { height:110px; display:block; filter: drop-shadow(0 8px 28px rgba(60,60,255,0.12)); }
+  /* Hero / Landing */
+  header.heroWrap{ padding-top: calc(14px + var(--top-h)); display:flex; justify-content:center; align-items:flex-start; position:relative; z-index:10 }
+  .hero{ width:100%; max-width:1100px; text-align:center; margin-top:12px; padding:28px; box-sizing:border-box; }
+  #heroClock{ font-family:'Press Start 2P'; font-size:14px; color:#bfe8ff; margin-bottom:10px; text-shadow:0 0 8px rgba(0,170,255,0.6) }
+  #logoPanel{ display:inline-block; padding:28px 34px; border-radius:18px; background: linear-gradient(180deg, rgba(8,8,12,0.66), rgba(4,4,8,0.9)); box-shadow: 0 20px 60px rgba(0,80,140,0.36); border:1px solid rgba(255,255,255,0.03); }
+  #logoPanel img{ height:110px; display:block; filter: drop-shadow(0 8px 28px rgba(0,120,200,0.12)); }
 
-  .subtitle { margin-top:10px; font-family:'Press Start 2P'; color:#9edbff; font-size:12px; text-shadow:0 0 8px rgba(140,120,255,0.35) }
+  .subtitle{ margin-top:10px; font-family:'Press Start 2P'; color:#9edbff; font-size:12px; text-shadow:0 0 8px rgba(0,140,220,0.25) }
+  .hint{ margin-top:12px; color:#9ccfff; font-size:12px; opacity:.85 }
 
-  /* hint */
-  .hint { margin-top:12px; color:#9ccfff; font-size:12px; opacity:.85 }
+  /* Pages and transitions (fade) */
+  main{ min-height:100vh; display:flex; justify-content:center; padding-bottom:80px; box-sizing:border-box; }
+  .page{ width:100%; max-width:1100px; padding:28px; box-sizing:border-box; display:none; opacity:0; transform:translateY(6px); transition:opacity .36s ease, transform .36s ease }
+  .page.active{ display:block; opacity:1; transform:none }
 
-  /* ---------- page sections (virtual pages) ---------- */
-  main { min-height:100vh; display:flex; justify-content:center; padding-bottom:80px; box-sizing:border-box; transition:opacity .36s ease; }
-  .page { width:100%; max-width:1100px; padding:28px; box-sizing:border-box; display:none; opacity:0; transform: translateY(6px); transition:opacity .36s ease, transform .36s ease; }
-  .page.active { display:block; opacity:1; transform: none; }
+  .grid{ display:grid; grid-template-columns: repeat(auto-fit,minmax(240px,1fr)); gap:16px }
+  .crtBtn{ padding:14px; border-radius:12px; background: linear-gradient(135deg,var(--neon-a),var(--neon-b)); color:#fff; border:1px solid rgba(255,255,255,0.08); font-family:'Press Start 2P'; letter-spacing:1px; display:flex; align-items:center; gap:10px; cursor:pointer; min-height:56px; box-shadow: 0 12px 36px rgba(0,80,140,0.12); transition: transform .12s ease, box-shadow .12s ease; position:relative; overflow:hidden }
+  .crtBtn:hover{ transform:translateY(-6px); box-shadow:0 26px 46px rgba(0,120,200,0.22) }
+  .crtBtn::before{ content:""; position:absolute; inset:0; background: repeating-linear-gradient(to bottom, rgba(255,255,255,0.04) 0px, rgba(255,255,255,0.04) 1px, transparent 2px, transparent 4px); mix-blend-mode:overlay; pointer-events:none }
 
-  /* grid of CRT buttons */
-  .grid { display:grid; grid-template-columns: repeat(auto-fit, minmax(240px,1fr)); gap:16px; }
-  .crtBtn { padding:14px; border-radius:12px; background: linear-gradient(135deg,var(--neon1),var(--neon2)); color:#fff;
-    border:1px solid rgba(255,255,255,0.08); font-family:'Press Start 2P'; letter-spacing:1px; font-size:12px;
-    display:flex; align-items:center; gap:10px; cursor:pointer; min-height:56px; box-shadow: 0 12px 36px rgba(120,60,200,0.12);
-    transition: transform .12s ease, box-shadow .12s ease; overflow:hidden; position:relative;
-  }
-  .crtBtn:hover { transform: translateY(-6px); box-shadow: 0 26px 46px rgba(160,80,255,0.28) }
-  .crtBtn::before { content:""; position:absolute; inset:0; background: repeating-linear-gradient(to bottom, rgba(255,255,255,0.04) 0px, rgba(255,255,255,0.04) 1px, transparent 2px, transparent 4px); mix-blend-mode: overlay; pointer-events:none; }
+  .thumb{ display:flex; gap:12px; align-items:center }
+  .thumb .img{ width:68px;height:48px;border-radius:8px;background:#111 }
 
-  /* search results / thumbnails */
-  .thumb { display:flex; gap:12px; align-items:center; }
-  .thumb .img { width:68px; height:48px; border-radius:8px; background:#111; display:inline-block; }
+  .form input,.form textarea{ width:100%; padding:12px;border-radius:10px;background:rgba(255,255,255,0.02);border:1px solid rgba(255,255,255,0.04); color:var(--fg); margin-bottom:8px }
+  .form button{ padding:12px;border-radius:10px;border:none; cursor:pointer; background: linear-gradient(135deg,var(--neon-a),var(--neon-b)); color:#fff; font-family:'Press Start 2P' }
 
-  /* suggestion form */
-  .form input, .form textarea { width:100%; padding:12px; border-radius:10px; background: rgba(255,255,255,0.02); border:1px solid rgba(255,255,255,0.04); color:var(--fg); margin-bottom:8px; font-size:13px }
-  .form button { padding:12px; border-radius:10px; border:none; cursor:pointer; background: linear-gradient(135deg,var(--neon1),var(--neon2)); color:#fff; font-family:'Press Start 2P'; }
+  /* Game shell & loader */
+  #gameShell{ position:fixed; inset:0; display:none; z-index:3000; background:#000 }
+  #gameShell.active{ display:block }
+  #gameTop{ position:fixed; left:12px; top:12px; z-index:3010; display:flex; gap:8px; align-items:center }
+  #gameTop button{ padding:8px 10px;border-radius:8px;background:rgba(255,255,255,0.03);border:1px solid rgba(255,255,255,0.04);color:#fff;cursor:pointer;font-family:'Press Start 2P';font-size:11px }
+  #gameFrame{ position:fixed; inset:0; border:none; width:100%; height:100%; background:#000 }
 
-  /* ---------- game loader (fullscreen iframe + retro loader) ---------- */
-  #gameShell { position:fixed; inset:0; display:none; z-index:3000; background:#000; }
-  #gameShell.active { display:block; }
-  #gameTop { position:fixed; left:12px; top:12px; z-index:3010; display:flex; gap:8px; align-items:center; }
-  #gameTop button { padding:8px 10px; border-radius:8px; background: rgba(255,255,255,0.03); border:1px solid rgba(255,255,255,0.04); color:#fff; cursor:pointer; font-family:'Press Start 2P'; font-size:11px }
+  #retroLoader{ position:fixed; inset:0; display:flex; align-items:center; justify-content:center; z-index:3050; background: radial-gradient(circle at center, rgba(255,255,255,0.02), rgba(0,0,0,0.9)); color:#9de5ff; font-family:'Press Start 2P'; font-size:14px; flex-direction:column; gap:12px; opacity:0; pointer-events:none; transition:opacity .18s ease }
+  #retroLoader.show{ opacity:1; pointer-events:auto }
+  .bootLine{ font-size:12px; color:#bfe9ff; text-shadow:0 0 8px rgba(0,140,220,0.4) }
+  .loadBar{ width:320px; max-width:70%; height:12px; border-radius:8px; background: rgba(255,255,255,0.04); overflow:hidden; border:1px solid rgba(255,255,255,0.03) }
+  .loadFill{ height:100%; width:0%; background: linear-gradient(90deg,var(--neon-a),var(--neon-b)); transition: width .8s ease; box-shadow: 0 8px 20px rgba(0,120,200,0.2) }
 
-  #gameFrame { position:fixed; inset:0; border:none; width:100%; height:100%; background:#000; }
+  /* CRT theme (toggleable) */
+  .crt-scanlines::after{ content:""; position:fixed; inset:0; pointer-events:none; background: repeating-linear-gradient(to bottom, rgba(255,255,255,0.03) 0px, rgba(255,255,255,0.03) 1px, transparent 2px, transparent 4px); mix-blend-mode: overlay; opacity:.65; z-index:5000 }
+  .crt-vignette::before{ content:""; position:fixed; inset:0; pointer-events:none; background: radial-gradient(ellipse at center, rgba(255,255,255,0.02), rgba(0,0,0,0.8) 60%); z-index:4999; mix-blend-mode:multiply }
+  .crt-glow *{ text-shadow:0 0 8px rgba(0,120,200,0.6) }
+  .crt-chrome{ filter: hue-rotate(4deg) saturate(120%) }
 
-  /* retro loader overlay */
-  #retroLoader { position:fixed; inset:0; display:flex; align-items:center; justify-content:center; z-index:3050; background: radial-gradient(circle at center, rgba(255,255,255,0.02), rgba(0,0,0,0.9)); color:#9de5ff; font-family:'Press Start 2P'; font-size:14px; flex-direction:column; gap:12px; opacity:0; pointer-events:none; transition:opacity .18s ease; }
-  #retroLoader.show { opacity:1; pointer-events:auto; }
-  .bootLine { font-size:12px; color:#bfe9ff; text-shadow:0 0 8px rgba(120,160,255,0.4); opacity:.95 }
-  .loadBar { width:320px; max-width:70%; height:12px; border-radius:8px; background: rgba(255,255,255,0.04); overflow:hidden; border:1px solid rgba(255,255,255,0.03); }
-  .loadFill { height:100%; width:0%; background: linear-gradient(90deg,var(--neon1),var(--neon2)); transition: width .8s ease; box-shadow: 0 8px 20px rgba(110,60,220,0.2) }
+  /* panic flash overlay (hidden by default) */
+  #panicFlash{ position:fixed; inset:0; background:#fff; opacity:0; pointer-events:none; z-index:999999999; transition: opacity .12s ease-in; }
+  #panicFlash.panic-active{ opacity:1; transition: opacity .12s ease-in; }
 
-  /* ---------- CRT theme (toggleable overlay effects) ---------- */
-  .crt-scanlines::after{
-    content:""; position:fixed; inset:0; pointer-events:none; background: repeating-linear-gradient(to bottom, rgba(255,255,255,0.03) 0px, rgba(255,255,255,0.03) 1px, transparent 2px, transparent 4px); mix-blend-mode: overlay; opacity:.65; z-index:5000;
-  }
-  .crt-vignette::before{
-    content:""; position:fixed; inset:0; pointer-events:none; background: radial-gradient(ellipse at center, rgba(255,255,255,0.02), rgba(0,0,0,0.8) 60%); z-index:4999; mix-blend-mode:multiply;
-  }
-  .crt-glow *{ text-shadow:0 0 8px rgba(120,100,255,0.6) }
-  .crt-chrome { filter: hue-rotate(4deg) saturate(120%); }
-
-  /* ---------- small responsive ---------- */
   @media (max-width:720px){
-    #menuSearch{ width: 46vw; }
-    #glassBar { padding:10px 12px; height:76px }
-    #miniLogo { height:40px }
+    #menuSearch{ width:46vw }
+    #glassBar{ padding:10px 12px; height:76px }
+    #miniLogo{ height:40px }
     .navLink{ font-size:12px }
   }
 </style>
@@ -183,7 +163,7 @@
 <header class="heroWrap">
   <div class="hero" id="homePage">
     <div id="heroClock">--:-- --</div>
-    <div id="logoPanel" role="img" aria-label="Unblockify logo"><img src="https://imgur.com/a/fBiF6Xo" alt="logo"></div>
+    <div id="logoPanel" role="img" aria-label="Unblockify logo"><img src="https://i.imgur.com/LnWVyXS.png" alt="logo"></div>
     <div class="subtitle">THE TUFFEST GAME SITE AROUND</div>
     <div class="hint">interact with the three lines on the top left to get started!</div>
   </div>
@@ -242,7 +222,10 @@
   </div>
 </div>
 
-<!-- ---------- JS (app logic) ---------- -->
+<!-- panic flash overlay (no clickable button) -->
+<div id="panicFlash" aria-hidden="true"></div>
+
+<!-- app logic -->
 <script>
 /* ---------- Data: games/apps ---------- */
 const GAMES = [
@@ -265,7 +248,6 @@ const GAMES = [
 ];
 
 const APPS = [
-  // reuse a couple as examples
   { name: "Eaglercraft", url: "https://y4b01m4tt.github.io/ubiquitous-enigma/" },
   { name: "Vex 3", url: "https://y4b01m4tt.github.io/probable-robot/" }
 ];
@@ -288,14 +270,12 @@ const gamesGrid = document.getElementById('gamesGrid');
 const appsGrid = document.getElementById('appsGrid');
 const gamesSearchTop = document.getElementById('gamesSearchTop');
 
-/* ---------- utility: show page with fade ---------- */
+/* ---------- show page (fade) ---------- */
 function showPage(key){
-  // fade out visible pages then fade in target
   Object.values(pages).forEach(p=>{ p.classList.remove('active'); });
   const page = pages[key];
   if(!page) return;
   page.classList.add('active');
-  // scroll to top
   window.scrollTo({ top: 0, behavior: 'smooth' });
 }
 
@@ -363,14 +343,13 @@ function renderApps(list){
 renderGames(GAMES);
 renderApps(APPS);
 
-/* ---------- search system (menuSearch filters both) ---------- */
+/* ---------- search systems ---------- */
 function filterAll(q){
   q = q.trim().toLowerCase();
   const gFiltered = GAMES.filter(g => g.name.toLowerCase().includes(q));
   const aFiltered = APPS.filter(a => a.name.toLowerCase().includes(q));
   renderGames(gFiltered);
   renderApps(aFiltered);
-  // automatically navigate to games page if results and menu is open
   if(q.length) showPage('games');
 }
 menuSearch.addEventListener('input', ()=> filterAll(menuSearch.value));
@@ -380,7 +359,7 @@ gamesSearchTop && gamesSearchTop.addEventListener('input', ()=> {
   renderGames(filtered);
 });
 
-/* ---------- game loader: fullscreen iframe with retro loader ---------- */
+/* ---------- game loader (iframe + retro loader) ---------- */
 const gameShell = document.getElementById('gameShell');
 const gameFrame = document.getElementById('gameFrame');
 const retroLoader = document.getElementById('retroLoader');
@@ -391,49 +370,32 @@ const crtToggle = document.getElementById('crtToggle');
 let crtEnabled = false;
 const CRT_CLASS = 'crt-scanlines crt-vignette crt-glow crt-chrome';
 
-/* open game: show loader, animate boot then set iframe src */
 function launchGame(item){
-  // show loader
   gameShell.classList.add('active');
   gameShell.setAttribute('aria-hidden','false');
   retroLoader.classList.add('show');
   loadFill.style.width = '0%';
 
-  // tiny boot sequence
   setTimeout(()=> loadFill.style.width = '28%', 80);
   setTimeout(()=> loadFill.style.width = '62%', 420);
   setTimeout(()=> loadFill.style.width = '92%', 900);
 
-  // after a short retro boot, load iframe
   setTimeout(()=> {
-    try {
-      gameFrame.src = item.url;
-    } catch(e){
-      console.error('Failed to set iframe:', e);
-      gameFrame.src = item.url;
-    }
-    // hide loader after iframe first paint (best-effort) + small delay
+    try { gameFrame.src = item.url; } catch(e){ gameFrame.src = item.url; }
     const finish = ()=> {
       retroLoader.classList.remove('show');
       loadFill.style.width = '100%';
-      // hide loader fully after brief time
       setTimeout(()=> retroLoader.classList.remove('show'), 220);
     };
-    // try listening to load
     gameFrame.addEventListener('load', finish, { once:true });
-    // ensure finish eventually
     setTimeout(finish, 2200);
   }, 1200);
 
-  // hide other UI (fade)
   document.querySelector('main').style.opacity = '0';
   document.querySelector('main').style.pointerEvents = 'none';
   document.querySelector('.heroWrap').style.opacity = '0';
-
-  // allow ESC to close
 }
 
-/* back button */
 backBtn.addEventListener('click', closeGame);
 function closeGame(){
   gameFrame.src = 'about:blank';
@@ -445,14 +407,13 @@ function closeGame(){
   showPage('home');
 }
 
-/* toggle CRT on/off while in game */
 crtToggle.addEventListener('click', ()=> {
   crtEnabled = !crtEnabled;
   if(crtEnabled) document.body.classList.add(...CRT_CLASS.split(' '));
   else document.body.classList.remove('crt-scanlines','crt-vignette','crt-glow','crt-chrome');
 });
 
-/* keyboard: Esc closes game or menu */
+/* esc handling */
 document.addEventListener('keydown', (e)=> {
   if(e.key === 'Escape'){
     if(gameShell.classList.contains('active')) closeGame();
@@ -467,10 +428,8 @@ document.getElementById('s-send').addEventListener('click', ()=>{
   const text = document.getElementById('s-text').value.trim();
   const note = document.getElementById('s-note');
   if(!text){ note.textContent = 'Please write your suggestion.'; return; }
-  // For now: console + local cache
   console.log('Suggestion:', { name, email, text });
   note.textContent = 'Thanks — suggestion saved locally.';
-  // optionally save to localStorage (persist)
   const store = JSON.parse(localStorage.getItem('unblockify_suggestions') || '[]');
   store.push({ name, email, text, time: Date.now() });
   localStorage.setItem('unblockify_suggestions', JSON.stringify(store));
@@ -478,18 +437,15 @@ document.getElementById('s-send').addEventListener('click', ()=>{
   setTimeout(()=> note.textContent = '', 4000);
 });
 
-/* ---------- initial page state ---------- */
+/* ---------- initial state ---------- */
 showPage('home');
 
-/* ---------- accessibility: focus search on open ---------- */
+/* ---------- accessibility: search on enter ---------- */
 menuSearch.addEventListener('keydown', (e) => {
-  if(e.key === 'Enter') {
-    filterAll(menuSearch.value);
-  }
+  if(e.key === 'Enter') { filterAll(menuSearch.value); }
 });
 
-/* helper for search used by Enter */
-function filterAll(q){ menuSearch.value = q; filterAllInner(q); }
+/* ---------- helpers for search ---------- */
 function filterAllInner(q){
   q = q.trim().toLowerCase();
   renderGames(GAMES.filter(g=> g.name.toLowerCase().includes(q)));
@@ -497,7 +453,7 @@ function filterAllInner(q){
   if(q) showPage('games');
 }
 
-/* helper re-render functions used earlier */
+/* render helpers used earlier */
 function renderGames(list){
   gamesGrid.innerHTML = '';
   list.forEach(g => gamesGrid.appendChild(makeBtn(g)));
@@ -510,12 +466,42 @@ function makeBtn(g){
   return btn;
 }
 
-/* make initial renders */
+/* initial renders */
 renderGames(GAMES);
 renderApps(APPS);
 
-/* small optimization: close glass menu on resize */
+/* close menu on resize */
 window.addEventListener('resize', ()=> glassWrap.classList.remove('open'));
+
+/* ---------- PANIC BUTTON (` key) ---------- */
+/* Animated CRT-like flash then redirect to Google Classroom. Triggered ONLY on backtick (`). */
+(function installPanicKey(){
+  const flash = document.getElementById('panicFlash');
+  if(!flash) return;
+
+  // Helper: attempt to focus top window (best-effort)
+  function tryFocusTop(){
+    try { window.focus(); } catch(e) {}
+  }
+
+  document.addEventListener('keydown', (ev) => {
+    // Only trigger for the raw backtick key (no modifiers)
+    if(ev.key === '`' && !ev.ctrlKey && !ev.altKey && !ev.metaKey && !ev.shiftKey){
+      // Prevent accidental repeat-trigger
+      if(ev.repeat) return;
+
+      // Visual flash: quick bright flash + subtle scanline collapse
+      flash.classList.add('panic-active');
+
+      // small extra micro-anim: fade to white then instant redirect
+      setTimeout(()=> {
+        tryFocusTop();
+        // final redirect to Google Classroom
+        window.location.href = 'https://classroom.google.com/h';
+      }, 150); // matches the CSS transition (very quick)
+    }
+  }, { passive: true });
+})();
 </script>
 </body>
 </html>
