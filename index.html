@@ -1,564 +1,508 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="en">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width,initial-scale=1" />
+<title>Unblockify — TUFF Games</title>
 
-<title>Unblockify</title>
+<link href="https://fonts.googleapis.com/css2?family=Press+Start+2P&display=swap" rel="stylesheet">
 
-<!-- ===================== -->
-<!--      STYLE BLOCK      -->
-<!-- ===================== -->
 <style>
-  /* ---------- variables ---------- */
   :root{
     --bg:#000;
     --fg:#e6f7ff;
     --glass: rgba(255,255,255,0.04);
     --glass-2: rgba(255,255,255,0.02);
-
-    /* NEW BLUE THEME */
     --neon1: #001d77;
     --neon2: #001d77;
-
     --top-h: 66px;
   }
 
-  html,body{
-    height:100%;
-    margin:0;
-    background:var(--bg);
-    color:var(--fg);
-    font-family:Inter,system-ui,-apple-system,Segoe UI,Roboto,"Press Start 2P",monospace;
-    -webkit-font-smoothing:antialiased;
-  }
+  /* Reset */
+  html,body{height:100%;margin:0;background:var(--bg);color:var(--fg);font-family:Inter,system-ui,-apple-system,Segoe UI,Roboto,"Press Start 2P",monospace; -webkit-font-smoothing:antialiased}
   a { color:inherit; text-decoration:none; }
 
-  /* ---------- top menu button ---------- */
+  /* Top menu button */
   #menuButton {
-    position:fixed;
-    left:14px;
-    top:14px;
-    z-index:2200;
-    width:48px;
-    height:48px;
-    border-radius:12px;
-    display:grid;
-    place-items:center;
+    position:fixed; left:14px; top:14px; z-index:2200;
+    width:48px; height:48px; border-radius:12px; display:grid; place-items:center;
     background: linear-gradient(180deg, rgba(255,255,255,0.02), rgba(255,255,255,0.01));
     border:1px solid rgba(255,255,255,0.04);
-    color:var(--fg);
-    cursor:pointer;
-    box-shadow:0 8px 24px rgba(0,0,0,0.6);
+    color:var(--fg); cursor:pointer; box-shadow: 0 8px 24px rgba(0,0,0,0.6);
     backdrop-filter: blur(6px) saturate(120%);
   }
 
-  /* ---------- glass menu bar ---------- */
+  /* Glass menu (search-bar style) */
   #glassWrap {
-    position:fixed;
-    left:0;
-    right:0;
-    top:-160px;
-    height:140px;
-    display:flex;
-    justify-content:center;
-    z-index:2100;
-    transition: top .36s cubic-bezier(.2,.9,.2,1);
-    pointer-events:none;
+    position:fixed; left:0; right:0; top:-160px; height:140px; display:flex; justify-content:center;
+    z-index:2100; transition: top .36s cubic-bezier(.2,.9,.2,1); pointer-events:none;
   }
-  #glassWrap.open {
-    top:12px;
-    pointer-events:auto;
-  }
+  #glassWrap.open { top:12px; pointer-events:auto; }
 
   #glassBar {
-    width:92%;
-    max-width:1200px;
-    height:84px;
-    border-radius:48px;
+    width:92%; max-width:1200px; height:84px; border-radius:48px;
     background: linear-gradient(180deg, rgba(10,12,20,0.48), rgba(6,6,10,0.34));
-    border:1px solid rgba(255,255,255,0.06);
-    display:flex;
-    align-items:center;
-    gap:18px;
-    padding:10px 20px;
-    box-sizing:border-box;
-    box-shadow:0 10px 32px rgba(0, 20, 120, 0.22);
+    border: 1px solid rgba(255,255,255,0.06);
+    display:flex; align-items:center; gap:18px; padding:10px 20px; box-sizing:border-box;
+    box-shadow: 0 10px 32px rgba(0, 20, 120, 0.22);
     backdrop-filter: blur(12px) saturate(120%);
-    position:relative;
-    overflow:hidden;
+    position:relative; overflow:hidden;
   }
 
-  /* neon animated edge */
-  #glassBar::after {
-    content:"";
-    position:absolute;
-    inset:-3px;
-    border-radius:52px;
-    pointer-events:none;
-    background: linear-gradient(
-      90deg,
-      rgba(0,0,0,0),
-      var(--neon1),
-      var(--neon2),
-      rgba(0,0,0,0)
-    );
-    filter: blur(18px);
-    opacity:.6;
-    mix-blend-mode:screen;
-    transform: translateX(-80%);
-    animation: neonSlide 6s linear infinite;
-  }
-  @keyframes neonSlide {
-    from { transform: translateX(-80%); }
-    to { transform: translateX(160%); }
-  }
-
-  .g-left { display:flex; gap:12px; align-items:center; min-width:120px; }
-  .g-center { flex:1; display:flex; justify-content:center; align-items:center; gap:18px; }
+  /* Content inside bar */
+  .g-left { display:flex; gap:12px; align-items:center; min-width: 120px; }
+  .g-center { flex:1; display:flex; justify-content:center; align-items:center; gap:18px; pointer-events:auto; }
   .g-right { display:flex; gap:12px; align-items:center; min-width:120px; justify-content:flex-end; }
 
-  .navLink {
-    color: rgba(255,255,255,0.92);
-    font-size:14px;
-    padding:8px 12px;
-    border-radius:8px;
-    cursor:pointer;
-    opacity:.95;
-    font-family:'Press Start 2P', monospace;
-    letter-spacing: .5px;
-  }
-  .navLink:hover {
-    background: rgba(255,255,255,0.02);
-    transform: translateY(-2px);
-    transition:.12s;
-  }
+  /* nav links */
+  .navLink { color: rgba(255,255,255,0.92); font-size:14px; padding:8px 12px; border-radius:8px; cursor:pointer; opacity:.95; font-family:'Press Start 2P', monospace; letter-spacing: .5px}
+  .navLink:hover { background: rgba(255,255,255,0.02); transform: translateY(-2px); transition: .12s; }
 
-  #menuClock {
-    font-family:'Press Start 2P';
-    font-size:13px;
-    color:#dff4ff;
-    text-shadow:0 0 8px rgba(0,32,140,0.75);
-  }
+  /* centered clock in menu */
+  #menuClock { font-family:'Press Start 2P'; font-size:13px; color:#dff4ff; text-shadow: 0 0 8px rgba(0,32,140,0.75); }
 
+  /* search input */
   #menuSearch {
-    width:420px;
-    max-width:38vw;
-    min-width:160px;
-    padding:10px 12px;
-    border-radius:12px;
-    background:rgba(255,255,255,0.02);
-    border:1px solid rgba(255,255,255,0.04);
-    color:var(--fg);
-    outline:none;
-    font-size:13px;
-    box-shadow: inset 0 0 6px rgba(255,255,255,0.02);
+    width:420px; max-width:38vw; min-width:160px; padding:10px 12px; border-radius:12px;
+    background: rgba(255,255,255,0.02); border: 1px solid rgba(255,255,255,0.04); color:var(--fg);
+    outline:none; font-size:13px; box-shadow: inset 0 0 6px rgba(255,255,255,0.02);
   }
+  #menuSearch::placeholder { color: #bcd8e8; opacity:.6; font-family:inherit; font-size:12px; }
 
+  /* mini logo */
   #miniLogo { height:52px; border-radius:8px; }
 
-  /* ---------- hero ---------- */
-  header.heroWrap{
-    padding-top: calc(14px + 66px);
-    display:flex;
-    justify-content:center;
-    align-items:flex-start;
-    position:relative;
-    z-index:10;
-  }
-  .hero{
-    width:100%;
-    max-width:1100px;
-    text-align:center;
-    margin-top:12px;
-    padding:28px;
-    box-sizing:border-box;
-  }
-  #heroClock{
-    font-family:'Press Start 2P';
-    font-size:14px;
-    color:#bfe8ff;
-    margin-bottom:10px;
-    text-shadow:0 0 8px rgba(0,32,140,0.7);
-  }
-  #logoPanel{
-    display:inline-block;
-    padding:28px 34px;
-    border-radius:18px;
-    background: linear-gradient(180deg, rgba(8,8,12,0.66), rgba(4,4,8,0.9));
-    box-shadow: 0 20px 60px rgba(0, 20, 120, 0.32);
-    border:1px solid rgba(255,255,255,0.03);
-  }
-  #logoPanel img{ height:110px; display:block; }
+  /* header hero (landing) */
+  header.heroWrap { padding-top: calc(14px + 66px); display:flex; justify-content:center; align-items:flex-start; position:relative; z-index:10 }
+  .hero { width:100%; max-width:1100px; text-align:center; margin-top:12px; padding:28px; box-sizing:border-box; }
+  #heroClock { font-family:'Press Start 2P'; font-size:14px; color:#bfe8ff; margin-bottom:10px; text-shadow:0 0 8px rgba(0,32,140,0.7); }
+  #logoPanel { display:inline-block; padding:28px 34px; border-radius:18px; background: linear-gradient(180deg, rgba(8,8,12,0.66), rgba(4,4,8,0.9)); box-shadow: 0 20px 60px rgba(0,20,120,0.36); border:1px solid rgba(255,255,255,0.03); }
+  #logoPanel img { height:110px; display:block; }
 
-  .subtitle{
-    margin-top:10px;
-    font-family:'Press Start 2P';
-    color:#9edbff;
-    font-size:12px;
-    text-shadow:0 0 8px rgba(0,32,140,0.4);
-  }
+  .subtitle { margin-top:10px; font-family:'Press Start 2P'; color:#9edbff; font-size:12px; text-shadow:0 0 8px rgba(0,32,140,0.35) }
+  .hint { margin-top:12px; color:#9ccfff; font-size:12px; opacity:.85 }
 
-  .hint{
-    margin-top:12px;
-    color:#9ccfff;
-    font-size:12px;
-    opacity:.85;
-  }
+  /* pages */
+  main { min-height:100vh; display:flex; justify-content:center; padding-bottom:80px; box-sizing:border-box; transition:opacity .36s ease; }
+  .page { width:100%; max-width:1100px; padding:28px; box-sizing:border-box; display:none; opacity:0; transform: translateY(6px); transition:opacity .36s ease, transform .36s ease; }
+  .page.active { display:block; opacity:1; transform: none; }
 
-  /* ---------- pages ---------- */
-  main{
-    min-height:100vh;
-    display:flex;
-    justify-content:center;
-    padding-bottom:80px;
-    transition:opacity .36s ease;
+  /* grid */
+  .grid { display:grid; grid-template-columns: repeat(auto-fit, minmax(240px,1fr)); gap:16px; }
+  .crtBtn { padding:14px; border-radius:12px; background: linear-gradient(135deg,var(--neon1),var(--neon2)); color:#fff;
+    border:1px solid rgba(255,255,255,0.08); font-family:'Press Start 2P'; letter-spacing:1px; font-size:12px;
+    display:flex; align-items:center; gap:10px; cursor:pointer; min-height:56px; box-shadow: 0 12px 36px rgba(0,20,120,0.12);
+    transition: transform .12s ease, box-shadow .12s ease; overflow:hidden; position:relative;
   }
+  .crtBtn:hover { transform: translateY(-6px); box-shadow: 0 26px 46px rgba(0,20,120,0.28) }
+  .crtBtn::before { content:""; position:absolute; inset:0; background: repeating-linear-gradient(to bottom, rgba(255,255,255,0.04) 0px, rgba(255,255,255,0.04) 1px, transparent 2px, transparent 4px); mix-blend-mode: overlay; pointer-events:none; }
 
-  .page{
-    width:100%;
-    max-width:1100px;
-    padding:28px;
-    display:none;
-    opacity:0;
-    transform: translateY(6px);
-    transition:opacity .36s ease, transform .36s ease;
-  }
-  .page.active{
-    display:block;
-    opacity:1;
-    transform:none;
-  }
+  /* suggestion form */
+  .form input, .form textarea { width:100%; padding:12px; border-radius:10px; background: rgba(255,255,255,0.02); border:1px solid rgba(255,255,255,0.04); color:var(--fg); margin-bottom:8px; font-size:13px }
+  .form button { padding:12px; border-radius:10px; border:none; cursor:pointer; background: linear-gradient(135deg,var(--neon1),var(--neon2)); color:#fff; font-family:'Press Start 2P'; }
 
-  /* ---------- game/app buttons ---------- */
-  .grid{
-    display:grid;
-    grid-template-columns: repeat(auto-fit, minmax(240px,1fr));
-    gap:16px;
-  }
+  /* game loader (fullscreen iframe + retro loader) */
+  #gameShell { position:fixed; inset:0; display:none; z-index:3000; background:#000; }
+  #gameShell.active { display:block; }
+  #gameTop { position:fixed; left:12px; top:12px; z-index:3010; display:flex; gap:8px; align-items:center; }
+  #gameTop button { padding:8px 10px; border-radius:8px; background: rgba(255,255,255,0.03); border:1px solid rgba(255,255,255,0.04); color:#fff; cursor:pointer; font-family:'Press Start 2P'; font-size:11px }
 
-  .crtBtn{
-    padding:14px;
-    border-radius:12px;
-    background: linear-gradient(135deg, var(--neon1), var(--neon2));
-    color:#fff;
-    border:1px solid rgba(255,255,255,0.08);
-    font-family:'Press Start 2P';
-    letter-spacing:1px;
-    font-size:12px;
-    display:flex;
-    align-items:center;
-    gap:10px;
-    cursor:pointer;
-    min-height:56px;
-    box-shadow:0 12px 36px rgba(0, 20, 120, 0.32);
-    transition: transform .12s ease, box-shadow .12s ease;
-    overflow:hidden;
-    position:relative;
-  }
-  .crtBtn:hover{
-    transform: translateY(-6px);
-    box-shadow:0 26px 46px rgba(0, 20, 120, 0.45);
-  }
+  #gameFrame { position:fixed; inset:0; border:none; width:100%; height:100%; background:#000; }
 
-  .crtBtn::before{
-    content:"";
-    position:absolute;
-    inset:0;
-    background: repeating-linear-gradient(
-      to bottom,
-      rgba(255,255,255,0.04) 0px,
-      rgba(255,255,255,0.04) 1px,
-      transparent 2px,
-      transparent 4px
-    );
-    mix-blend-mode: overlay;
-    pointer-events:none;
-  }
+  /* retro loader overlay */
+  #retroLoader { position:fixed; inset:0; display:flex; align-items:center; justify-content:center; z-index:3050; background: radial-gradient(circle at center, rgba(255,255,255,0.02), rgba(0,0,0,0.9)); color:#9de5ff; font-family:'Press Start 2P'; font-size:14px; flex-direction:column; gap:12px; opacity:0; pointer-events:none; transition:opacity .18s ease; }
+  #retroLoader.show { opacity:1; pointer-events:auto; }
+  .bootLine { font-size:12px; color:#bfe9ff; text-shadow:0 0 8px rgba(0,32,140,0.4); opacity:.95 }
+  .loadBar { width:320px; max-width:70%; height:12px; border-radius:8px; background: rgba(255,255,255,0.04); overflow:hidden; border:1px solid rgba(255,255,255,0.03); }
+  .loadFill { height:100%; width:0%; background: linear-gradient(90deg,var(--neon1),var(--neon2)); transition: width .8s ease; box-shadow: 0 8px 20px rgba(0,20,120,0.2) }
 
-  /* ---------- suggestion form ---------- */
-  .form input,
-  .form textarea{
-    width:100%;
-    padding:12px;
-    border-radius:10px;
-    background:rgba(255,255,255,0.02);
-    border:1px solid rgba(255,255,255,0.04);
-    color:var(--fg);
-    margin-bottom:8px;
-    font-size:13px;
+  /* CRT theme (toggleable) */
+  .crt-scanlines::after{
+    content:""; position:fixed; inset:0; pointer-events:none; background: repeating-linear-gradient(to bottom, rgba(255,255,255,0.03) 0px, rgba(255,255,255,0.03) 1px, transparent 2px, transparent 4px); mix-blend-mode: overlay; opacity:.65; z-index:5000;
   }
-  .form button{
-    padding:12px;
-    border-radius:10px;
-    border:none;
-    cursor:pointer;
-    background: linear-gradient(135deg, var(--neon1), var(--neon2));
-    color:#fff;
-    font-family:'Press Start 2P';
+  .crt-vignette::before{
+    content:""; position:fixed; inset:0; pointer-events:none; background: radial-gradient(ellipse at center, rgba(255,255,255,0.02), rgba(0,0,0,0.8) 60%); z-index:4999; mix-blend-mode:multiply;
   }
+  .crt-glow *{ text-shadow:0 0 8px rgba(0,32,140,0.6) }
+  .crt-chrome { filter: hue-rotate(0deg) saturate(120%); }
 
-  /* ---------- game loader ---------- */
-  #gameShell{
-    position:fixed;
-    inset:0;
-    display:none;
-    z-index:3000;
-    background:#000;
-  }
-  #gameShell.active{ display:block; }
+  /* panic flash overlay */
+  #panicFlash { position:fixed; inset:0; background:#fff; opacity:0; pointer-events:none; z-index:999999999; transition: opacity .12s ease-in; }
+  #panicFlash.panic-active { opacity:1; }
 
-  #gameTop{
-    position:fixed;
-    left:12px;
-    top:12px;
-    z-index:3010;
-    display:flex;
-    gap:8px;
-    align-items:center;
-  }
-  #gameTop button{
-    padding:8px 10px;
-    border-radius:8px;
-    background: rgba(255,255,255,0.03);
-    border:1px solid rgba(255,255,255,0.04);
-    color:#fff;
-    cursor:pointer;
-    font-family:'Press Start 2P';
-    font-size:11px;
-  }
-
-  #gameFrame{
-    position:fixed;
-    inset:0;
-    border:none;
-    width:100%;
-    height:100%;
-    background:#000;
-  }
-
-  /* ---------- retro loader ---------- */
-  #retroLoader{
-    position:fixed;
-    inset:0;
-    display:flex;
-    align-items:center;
-    justify-content:center;
-    flex-direction:column;
-    gap:12px;
-    background: radial-gradient(circle at center, rgba(255,255,255,0.02), rgba(0,0,0,0.9));
-    color:#9de5ff;
-    font-family:'Press Start 2P';
-    font-size:14px;
-    z-index:3050;
-    opacity:0;
-    pointer-events:none;
-    transition:opacity .18s ease;
-  }
-  #retroLoader.show{
-    opacity:1;
-    pointer-events:auto;
-  }
-
-  .bootLine{
-    font-size:12px;
-    color:#bfe9ff;
-  }
-
-  .loadBar{
-    width:320px;
-    max-width:70%;
-    height:12px;
-    border-radius:8px;
-    background:rgba(255,255,255,0.04);
-    overflow:hidden;
-    border:1px solid rgba(255,255,255,0.03);
-  }
-
-  .loadFill{
-    height:100%;
-    width:0%;
-    background: linear-gradient(90deg, var(--neon1), var(--neon2));
-    transition: width .8s ease;
+  @media (max-width:720px){
+    #menuSearch{ width:46vw; }
+    #glassBar { padding:10px 12px; height:76px }
+    #miniLogo { height:40px }
+    .navLink{ font-size:12px }
   }
 </style>
 </head>
+<body>
 
-<!-- ===================== -->
-<!--        BODY           -->
-<!-- ===================== -->
-<body class="crt-scanlines crt-vignette crt-glow crt-chrome">
+<!-- menu button -->
+<button id="menuButton" aria-label="Open menu">☰</button>
 
-<!-- Menu Button -->
-<div id="menuButton">≡</div>
-
-<!-- Glass Menu Bar -->
-<div id="glassWrap">
-  <div id="glassBar">
+<!-- glass menu (search-bar style) -->
+<div id="glassWrap" aria-hidden="true">
+  <div id="glassBar" role="navigation" aria-label="Main menu">
     <div class="g-left">
-      <span class="navLink" onclick="openPage('games')">Games</span>
-      <span class="navLink" onclick="openPage('apps')">Apps</span>
+      <div class="navLink" data-nav="home">HOME</div>
+      <div class="navLink" data-nav="games">GAMES</div>
+      <div class="navLink" data-nav="apps">APPS</div>
     </div>
 
     <div class="g-center">
-      <input id="menuSearch" placeholder="Search…">
-      <img id="miniLogo" src="REPLACE_WITH_LOGO_URL">
+      <input id="menuSearch" placeholder="Search games or apps..." aria-label="Search" />
+      <div id="menuClock">--:-- --</div>
     </div>
 
     <div class="g-right">
-      <span id="menuClock"></span>
-      <span class="navLink" onclick="openPage('suggestions')">Suggest</span>
+      <div class="navLink" data-nav="suggest">SUGGEST</div>
+      <img id="miniLogo" src="https://i.imgur.com/RIBBD4l.png" alt="logo">
     </div>
   </div>
 </div>
 
-<!-- ===================== -->
-<!--     LANDING PAGE      -->
-<!-- ===================== -->
+<!-- hero landing -->
 <header class="heroWrap">
-  <div class="hero">
-    <div id="heroClock">--:--</div>
-
-    <div id="logoPanel">
-      <img src="REPLACE_WITH_LOGO_URL">
-    </div>
-
-    <div class="subtitle">Unblockify</div>
+  <div class="hero" id="homePage">
+    <div id="heroClock">--:-- --</div>
+    <div id="logoPanel" role="img" aria-label="Unblockify logo"><img src="https://i.imgur.com/RIBBD4l.png" alt="logo"></div>
+    <div class="subtitle">THE TUFFEST GAME SITE AROUND</div>
+    <div class="hint">interact with the three lines on the top left to get started!</div>
   </div>
 </header>
 
-<!-- ===================== -->
-<!--      MAIN PAGES       -->
-<!-- ===================== -->
-<main>
-
-  <!-- Games -->
-  <section id="games" class="page">
-    <h2>Games</h2>
-    <div class="grid" id="gameGrid">
-      <!-- Example button -->
-      <div class="crtBtn" onclick="launchGame('https://y4b01m4tt.github.io/jubilant-dollop/')">Cookie Clicker</div>
+<main id="appMain" aria-live="polite">
+  <!-- Games page -->
+  <section class="page" id="gamesPage" aria-label="Games">
+    <h3 style="font-family:'Press Start 2P'; text-align:center">Games</h3>
+    <div style="max-width:1100px; margin:12px auto 18px;">
+      <input id="gamesSearchTop" placeholder="Filter games..." style="width:100%;padding:12px;border-radius:10px;border:1px solid rgba(255,255,255,0.04); background:rgba(255,255,255,0.02); color:inherit">
     </div>
+    <div id="gamesGrid" class="grid" style="max-width:1100px;margin:0 auto;"></div>
   </section>
 
-  <!-- Apps -->
-  <section id="apps" class="page">
-    <h2>Apps</h2>
-    <div class="grid" id="appGrid">
-      <div class="crtBtn">No apps added yet</div>
+  <!-- Apps page -->
+  <section class="page" id="appsPage" aria-label="Apps">
+    <h3 style="font-family:'Press Start 2P'; text-align:center">Apps</h3>
+    <div style="max-width:1100px; margin:12px auto 18px;">
+      <input id="appsSearchTop" placeholder="Filter apps..." style="width:100%;padding:12px;border-radius:10px;border:1px solid rgba(255,255,255,0.04); background:rgba(255,255,255,0.02); color:inherit">
     </div>
+    <div id="appsGrid" class="grid" style="max-width:1100px; margin:0 auto;"></div>
   </section>
 
-  <!-- Suggest form -->
-  <section id="suggestions" class="page">
-    <h2>Suggestion Box</h2>
-    <div class="form">
-      <input placeholder="Your name (optional)">
-      <input placeholder="Game or app name">
-      <textarea placeholder="Additional info"></textarea>
-      <button>Submit</button>
+  <!-- Suggest page -->
+  <section class="page" id="suggestPage" aria-label="Suggestions">
+    <h3 style="font-family:'Press Start 2P'; text-align:center">Suggestion Box</h3>
+    <div style="max-width:840px;margin:0 auto;padding:12px;">
+      <div class="form">
+        <input id="s-name" placeholder="Name (optional)">
+        <input id="s-email" placeholder="Email (optional)">
+        <textarea id="s-text" rows="6" placeholder="What would you like to suggest?"></textarea>
+        <div style="display:flex; gap:12px;">
+          <button id="s-send">Send</button>
+          <button id="s-clear" style="background:rgba(255,255,255,0.03); color:#fff">Clear</button>
+        </div>
+        <div id="s-note" style="margin-top:8px;color:#bfeeff"></div>
+      </div>
     </div>
   </section>
-
 </main>
 
-<!-- ===================== -->
-<!--   GAME FULLSCREEN     -->
-<!-- ===================== -->
-<div id="gameShell">
+<!-- game shell & loader -->
+<div id="gameShell" aria-hidden="true">
   <div id="gameTop">
-    <button onclick="exitGame()">Exit</button>
+    <button id="backBtn">← Back</button>
+    <button id="crtToggle">CRT</button>
   </div>
-  <iframe id="gameFrame"></iframe>
+
+  <iframe id="gameFrame" title="Game frame" sandbox="allow-scripts allow-same-origin allow-forms allow-popups"></iframe>
+
+  <div id="retroLoader" role="status" aria-live="polite">
+    <div class="bootLine">BOOTING SYSTEM...</div>
+    <div class="loadBar"><div class="loadFill"></div></div>
+    <div class="bootLine">INITIALIZING RENDERER</div>
+  </div>
 </div>
 
-<!-- Retro Loader -->
-<div id="retroLoader">
-  <div class="bootLine">Loading…</div>
-  <div class="loadBar"><div class="loadFill"></div></div>
-</div>
+<!-- panic flash overlay (no clickable button) -->
+<div id="panicFlash" aria-hidden="true"></div>
 
-<!-- ===================== -->
-<!--        SCRIPTS        -->
-<!-- ===================== -->
+<!-- app logic -->
 <script>
-  /* =====================
-         CLOCKS
-  ===================== */
-  function updateClocks(){
-    const now = new Date();
-    let h = now.getHours();
-    let m = now.getMinutes().toString().padStart(2, '0');
-    let ampm = h >= 12 ? "PM" : "AM";
-    h = h % 12 || 12;
+/* ---------- Data: games/apps ---------- */
+const GAMES = [
+  { name: "Retro Bowl", url: "https://y4b01m4tt.github.io/curly-journey/" },
+  { name: "CrazyCattle3D", url: "https://y4b01m4tt.github.io/improved-octo-succotash/" },
+  { name: "Cookie Clicker", url: "https://y4b01m4tt.github.io/jubilant-dollop/" },
+  { name: "Drive Mad", url: "https://y4b01m4tt.github.io/stunning-eureka/" },
+  { name: "Drift Hunters", url: "https://y4b01m4tt.github.io/cuddly-invention/" },
+  { name: "Minesweeper", url: "https://nickarocho.github.io/minesweeper/" },
+  { name: "Eaglercraft", url: "https://y4b01m4tt.github.io/ubiquitous-enigma/" },
+  { name: "NZ: Portable", url: "https://rawcdn.githack.com/gn-math/assets/main/308/" },
+  { name: "Idle Dice", url: "https://y4b01m4tt.github.io/scaling-spork/" },
+  { name: "Idle Breakout", url: "https://y4b01m4tt.github.io/reimagined-parakeet/" },
+  { name: "Drag Racer V3", url: "https://y4b01m4tt.github.io/jubilant-fishstick/" },
+  { name: "Tiny Fishing", url: "https://y4b01m4tt.github.io/automatic-garbanzo/" },
+  { name: "Bacon May Die", url: "https://y4b01m4tt.github.io/automatic-dollop/" },
+  { name: "Friday Night Funkin'", url: "https://y4b01m4tt.github.io/shiny-lamp/" },
+  { name: "1v1.lol", url: "https://y4b01m4tt.github.io/scaling-octo-barnacle/" },
+  { name: "Vex 3", url: "https://y4b01m4tt.github.io/probable-robot/" }
+];
 
-    const timeStr = `${h}:${m} ${ampm}`;
-    document.getElementById("menuClock").textContent = timeStr;
-    document.getElementById("heroClock").textContent = timeStr;
-  }
-  setInterval(updateClocks,1000);
-  updateClocks();
+const APPS = [
+  { name: "Eaglercraft", url: "https://y4b01m4tt.github.io/ubiquitous-enigma/" },
+  { name: "Vex 3", url: "https://y4b01m4tt.github.io/probable-robot/" }
+];
 
-  /* =====================
-        MENU BUTTON
-  ===================== */
-  const menuButton = document.getElementById("menuButton");
-  const glassWrap = document.getElementById("glassWrap");
+/* ---------- elements ---------- */
+const menuButton = document.getElementById('menuButton');
+const glassWrap = document.getElementById('glassWrap');
+const navLinks = [...document.querySelectorAll('.navLink')];
+const menuSearch = document.getElementById('menuSearch');
+const menuClock = document.getElementById('menuClock');
+const heroClock = document.getElementById('heroClock');
 
-  menuButton.onclick = () => {
-    glassWrap.classList.toggle("open");
-  };
+const pages = {
+  home: document.getElementById('homePage'),
+  games: document.getElementById('gamesPage'),
+  apps: document.getElementById('appsPage'),
+  suggest: document.getElementById('suggestPage')
+};
+const gamesGrid = document.getElementById('gamesGrid');
+const appsGrid = document.getElementById('appsGrid');
+const gamesSearchTop = document.getElementById('gamesSearchTop');
 
-  /* =====================
-        PAGE SWITCHING
-  ===================== */
-  function openPage(id){
-    document.querySelectorAll(".page").forEach(p => p.classList.remove("active"));
-    document.getElementById(id).classList.add("active");
-    glassWrap.classList.remove("open");
-  }
+/* ---------- utility: show page with fade ---------- */
+function showPage(key){
+  Object.values(pages).forEach(p=>{ p.classList.remove('active'); });
+  const page = pages[key];
+  if(!page) return;
+  page.classList.add('active');
+  window.scrollTo({ top: 0, behavior: 'smooth' });
+}
 
-  /* =====================
-        GAME LOADING
-  ===================== */
-  let gameActive = false;
+/* ---------- menu open/close ---------- */
+menuButton.addEventListener('click', ()=> {
+  const open = glassWrap.classList.toggle('open');
+  glassWrap.setAttribute('aria-hidden', (!open).toString());
+  if(open) menuSearch.focus();
+});
 
-  function launchGame(url){
-    gameActive = true;
-
-    const shell = document.getElementById("gameShell");
-    const frame = document.getElementById("gameFrame");
-    const loader = document.getElementById("retroLoader");
-    const fill = document.querySelector(".loadFill");
-
-    loader.classList.add("show");
-    fill.style.width = "0%";
-
-    setTimeout(()=>fill.style.width="100%",50);
-
-    setTimeout(()=>{
-      loader.classList.remove("show");
-      frame.src = url;
-      shell.classList.add("active");
-    },1200);
-  }
-
-  function exitGame(){
-    gameActive = false;
-    document.getElementById("gameShell").classList.remove("active");
-    document.getElementById("gameFrame").src = "";
-  }
-
-  /* =====================
-       PANIC BUTTON
-       (ONLY IN GAME)
-  ===================== */
-  document.addEventListener("keydown", e=>{
-    if(e.key === "`" && gameActive){
-      window.location.href = "https://classroom.google.com";
-    }
+/* click nav items */
+navLinks.forEach(n=>{
+  n.addEventListener('click', ()=> {
+    const target = n.getAttribute('data-nav');
+    if(target === 'home') showPage('home');
+    if(target === 'games') showPage('games');
+    if(target === 'apps') showPage('apps');
+    if(target === 'suggest') showPage('suggest');
+    glassWrap.classList.remove('open');
   });
-</script>
+});
 
+/* close menu clicking outside */
+document.addEventListener('click', (e)=>{
+  if(!glassWrap.classList.contains('open')) return;
+  const inside = glassWrap.contains(e.target) || menuButton.contains(e.target);
+  if(!inside) glassWrap.classList.remove('open');
+});
+
+/* ---------- clock (12-hour) ---------- */
+function updateClock(){
+  const d = new Date();
+  let h = d.getHours();
+  const m = String(d.getMinutes()).padStart(2,'0');
+  const ampm = h >= 12 ? 'PM' : 'AM';
+  h = h % 12; if(h===0) h=12;
+  const txt = `${h}:${m} ${ampm}`;
+  menuClock.textContent = txt;
+  heroClock.textContent = txt;
+}
+setInterval(updateClock, 1000);
+updateClock();
+
+/* ---------- render lists ---------- */
+function makeBtn(item){
+  const b = document.createElement('button');
+  b.className = 'crtBtn';
+  b.innerHTML = `<svg viewBox="0 0 20 20" style="width:18px;height:18px"><path d="M3 10l4-4v3h4V2l4 4v14H3V10z"/></svg><span style="position:relative;z-index:2">${item.name}</span>`;
+  b.addEventListener('click', ()=> launchGame(item));
+  return b;
+}
+function renderGames(list){
+  gamesGrid.innerHTML = '';
+  list.forEach(g => gamesGrid.appendChild(makeBtn(g)));
+}
+function renderApps(list){
+  appsGrid.innerHTML = '';
+  list.forEach(a => {
+    const b = document.createElement('button'); b.className='crtBtn';
+    b.innerHTML = `<svg viewBox="0 0 20 20" style="width:18px;height:18px"><path d="M3 10l4-4v3h4V2l4 4v14H3V10z"/></svg><span style="position:relative;z-index:2">${a.name}</span>`;
+    b.addEventListener('click', ()=> launchGame(a));
+    appsGrid.appendChild(b);
+  });
+}
+renderGames(GAMES);
+renderApps(APPS);
+
+/* ---------- search system (menuSearch filters both) ---------- */
+function filterAll(q){
+  q = q.trim().toLowerCase();
+  const gFiltered = GAMES.filter(g => g.name.toLowerCase().includes(q));
+  const aFiltered = APPS.filter(a => a.name.toLowerCase().includes(q));
+  renderGames(gFiltered);
+  renderApps(aFiltered);
+  if(q.length) showPage('games');
+}
+menuSearch.addEventListener('input', ()=> filterAll(menuSearch.value));
+gamesSearchTop && gamesSearchTop.addEventListener('input', ()=> {
+  const q = gamesSearchTop.value.trim().toLowerCase();
+  const filtered = GAMES.filter(g => g.name.toLowerCase().includes(q));
+  renderGames(filtered);
+});
+
+/* ---------- game loader: fullscreen iframe with retro loader ---------- */
+const gameShell = document.getElementById('gameShell');
+const gameFrame = document.getElementById('gameFrame');
+const retroLoader = document.getElementById('retroLoader');
+const loadFill = retroLoader.querySelector('.loadFill');
+const backBtn = document.getElementById('backBtn');
+const crtToggle = document.getElementById('crtToggle');
+
+let crtEnabled = false;
+let gameActive = false; // track whether a game is open
+const CRT_CLASS = 'crt-scanlines crt-vignette crt-glow crt-chrome';
+
+function launchGame(item){
+  gameActive = true;
+  gameShell.classList.add('active');
+  gameShell.setAttribute('aria-hidden','false');
+  retroLoader.classList.add('show');
+  loadFill.style.width = '0%';
+
+  setTimeout(()=> loadFill.style.width = '28%', 80);
+  setTimeout(()=> loadFill.style.width = '62%', 420);
+  setTimeout(()=> loadFill.style.width = '92%', 900);
+
+  setTimeout(()=> {
+    try { gameFrame.src = item.url; } catch(e) { gameFrame.src = item.url; }
+    const finish = ()=> {
+      retroLoader.classList.remove('show');
+      loadFill.style.width = '100%';
+      setTimeout(()=> retroLoader.classList.remove('show'), 220);
+    };
+    gameFrame.addEventListener('load', finish, { once:true });
+    setTimeout(finish, 2200);
+  }, 1200);
+
+  document.querySelector('main').style.opacity = '0';
+  document.querySelector('main').style.pointerEvents = 'none';
+  document.querySelector('.heroWrap').style.opacity = '0';
+}
+
+backBtn.addEventListener('click', closeGame);
+function closeGame(){
+  gameActive = false;
+  gameFrame.src = 'about:blank';
+  gameShell.classList.remove('active');
+  retroLoader.classList.remove('show');
+  document.querySelector('main').style.opacity = '1';
+  document.querySelector('main').style.pointerEvents = '';
+  document.querySelector('.heroWrap').style.opacity = '1';
+  showPage('home');
+}
+
+crtToggle.addEventListener('click', ()=> {
+  crtEnabled = !crtEnabled;
+  if(crtEnabled) document.body.classList.add(...CRT_CLASS.split(' '));
+  else document.body.classList.remove('crt-scanlines','crt-vignette','crt-glow','crt-chrome');
+});
+
+/* keyboard: Esc closes game or menu */
+document.addEventListener('keydown', (e)=> {
+  if(e.key === 'Escape'){
+    if(gameShell.classList.contains('active')) closeGame();
+    else if(glassWrap.classList.contains('open')) glassWrap.classList.remove('open');
+  }
+});
+
+/* ---------- suggestion send ---------- */
+document.getElementById('s-send').addEventListener('click', ()=>{
+  const name = document.getElementById('s-name').value.trim();
+  const email = document.getElementById('s-email').value.trim();
+  const text = document.getElementById('s-text').value.trim();
+  const note = document.getElementById('s-note');
+  if(!text){ note.textContent = 'Please write your suggestion.'; return; }
+  console.log('Suggestion:', { name, email, text });
+  note.textContent = 'Thanks — suggestion saved locally.';
+  const store = JSON.parse(localStorage.getItem('unblockify_suggestions') || '[]');
+  store.push({ name, email, text, time: Date.now() });
+  localStorage.setItem('unblockify_suggestions', JSON.stringify(store));
+  document.getElementById('s-name').value=''; document.getElementById('s-email').value=''; document.getElementById('s-text').value='';
+  setTimeout(()=> note.textContent = '', 4000);
+});
+
+/* ---------- initial page state ---------- */
+showPage('home');
+
+/* ---------- accessibility: focus search on open ---------- */
+menuSearch.addEventListener('keydown', (e) => {
+  if(e.key === 'Enter') {
+    filterAll(menuSearch.value);
+  }
+});
+
+/* helper for search used by Enter */
+function filterAllInner(q){
+  q = q.trim().toLowerCase();
+  renderGames(GAMES.filter(g=> g.name.toLowerCase().includes(q)));
+  renderApps(APPS.filter(a=> a.name.toLowerCase().includes(q)));
+  if(q) showPage('games');
+}
+
+/* render helpers */
+function renderGames(list){
+  gamesGrid.innerHTML = '';
+  list.forEach(g => gamesGrid.appendChild(makeBtn(g)));
+}
+function makeBtn(g){
+  const btn = document.createElement('button');
+  btn.className = 'crtBtn';
+  btn.innerHTML = `<svg viewBox="0 0 20 20" style="width:18px;height:18px"><path d="M3 10l4-4v3h4V2l4 4v14H3V10z"/></svg><span style="position:relative;z-index:2">${g.name}</span>`;
+  btn.addEventListener('click', ()=> launchGame(g));
+  return btn;
+}
+
+/* initial renders */
+renderGames(GAMES);
+renderApps(APPS);
+
+/* close menu on resize */
+window.addEventListener('resize', ()=> glassWrap.classList.remove('open'));
+
+/* ---------- PANIC BUTTON (` key) - only when in game ---------- */
+(function panicKeyOnlyInGame(){
+  const flash = document.getElementById('panicFlash');
+  function doFlashThenRedirect(){
+    if(flash) flash.classList.add('panic-active');
+    // short delay to let user see the flash
+    setTimeout(()=> {
+      window.location.href = 'https://classroom.google.com/h';
+    }, 150);
+  }
+
+  document.addEventListener('keydown', (ev) => {
+    // ONLY trigger when a game is open
+    if(ev.key === '`' && !ev.ctrlKey && !ev.altKey && !ev.metaKey && !ev.shiftKey){
+      if(!gameActive) return;
+      if(ev.repeat) return;
+      doFlashThenRedirect();
+    }
+  }, { passive: true });
+})();
+</script>
 </body>
 </html>
