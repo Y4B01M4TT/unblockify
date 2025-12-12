@@ -39,15 +39,37 @@
   }
   #glassWrap.open { top:12px; pointer-events:auto; }
 
-  #glassBar {
-    width:92%; max-width:1200px; height:84px; border-radius:48px;
-    background: linear-gradient(180deg, rgba(10,12,20,0.48), rgba(6,6,10,0.34));
-    border: 1px solid rgba(255,255,255,0.06);
-    display:flex; align-items:center; gap:18px; padding:10px 20px; box-sizing:border-box;
-    box-shadow: 0 10px 32px rgba(0, 20, 120, 0.22);
-    backdrop-filter: blur(12px) saturate(120%);
-    position:relative; overflow:hidden;
-  }
+/* animated dual-color border */
+#glassBar::after {
+  content:"";
+  position:absolute;
+  inset:-3px;
+  border-radius:52px;
+  pointer-events:none;
+  
+  /* moving gradient */
+  background: linear-gradient(
+      90deg,
+      rgba(0,0,0,0) 0%,
+      #001d77 20%,
+      #00e0c6 50%,
+      #001d77 80%,
+      rgba(0,0,0,0) 100%
+  );
+
+  filter: blur(22px);
+  opacity:0.8;
+  mix-blend-mode:screen;
+
+  animation: neonBorderSlide 6s linear infinite;
+}
+
+/* animation
+   moves gradient left→right infinitely */
+@keyframes neonBorderSlide {
+  0%   { transform: translateX(-60%); }
+  100% { transform: translateX(160%); }
+}
 
   /* Content inside bar */
   .g-left { display:flex; gap:12px; align-items:center; min-width: 120px; }
@@ -145,7 +167,7 @@
 
 <!-- glass menu (search-bar style) -->
 <div id="glassWrap" aria-hidden="true">
-  <div id="glassBar" role="navigation" aria-label="Main menu">
+  <div id="" role="navigation" aria-label="Main menu">
     <div class="g-left">
       <div class="navLink" data-nav="home">HOME</div>
       <div class="navLink" data-nav="games">GAMES</div>
