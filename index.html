@@ -48,6 +48,27 @@
     backdrop-filter: blur(12px) saturate(120%);
     position:relative; overflow:hidden;
   }
+  /* animated border cycling between blue and blue-green */
+#glassBar::after {
+  content:"";
+  position:absolute;
+  top:0; left:0; right:0; bottom:0;
+  border-radius:48px;
+  pointer-events:none;
+
+  border:3px solid transparent;
+  background:
+    linear-gradient(#0000, #0000) padding-box,
+    linear-gradient(90deg, #001d77, #00e0c6, #001d77) border-box;
+
+  background-size:200% 100%;
+  animation: neonBorderCycle 6s linear infinite;
+}
+
+@keyframes neonBorderCycle {
+  0% { background-position: 0% 0%; }
+  100% { background-position: 200% 0%; }
+}
 
   /* Content inside bar */
   .g-left { display:flex; gap:12px; align-items:center; min-width: 120px; }
@@ -95,6 +116,15 @@
     transition: transform .12s ease, box-shadow .12s ease; overflow:hidden; position:relative;
   }
   .crtBtn:hover { transform: translateY(-6px); box-shadow: 0 26px 46px rgba(0,20,120,0.28) }
+  /* neon hover outline */
+.crtBtn:hover {
+  border-color:#00e0c6;
+  box-shadow:
+    0 0 14px #00e0c6,
+    0 0 28px #001d77,
+    0 26px 46px rgba(0,20,120,0.28);
+}
+
   .crtBtn::before { content:""; position:absolute; inset:0; background: repeating-linear-gradient(to bottom, rgba(255,255,255,0.04) 0px, rgba(255,255,255,0.04) 1px, transparent 2px, transparent 4px); mix-blend-mode: overlay; pointer-events:none; }
 
   /* suggestion form */
