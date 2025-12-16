@@ -31,8 +31,11 @@ font-family:Inter,system-ui,-apple-system,Segoe UI,Roboto,"Press Start 2P",monos
 a{color:inherit;text-decoration:none}
 
 /* ================= MENU BUTTON ================= */
-#menuButton{
-position:fixed;left:14px;top:14px;z-index:2200;
+#menuButton {
+position:fixed;
+left:14px;
+top:14px;
+z-index:6000; /* ABOVE glass bar */
 width:48px;height:48px;border-radius:12px;
 display:grid;place-items:center;
 background:linear-gradient(180deg,rgba(255,255,255,.02),rgba(255,255,255,.01));
@@ -44,14 +47,22 @@ backdrop-filter:blur(6px) saturate(120%)
 }
 
 /* ================= GLASS MENU ================= */
-#glassWrap{
-position:fixed;left:0;right:0;top:-160px;height:140px;
-display:flex;justify-content:center;
-z-index:2100;
-transition:top .36s cubic-bezier(.2,.9,.2,1);
-pointer-events:none
+#glassWrap {
+position:fixed;
+left:0;
+right:0;
+top:-160px;
+height:140px;
+display:flex;
+justify-content:center;
+z-index:5000; /* higher than hero + everything else */
+transition: top .36s cubic-bezier(.2,.9,.2,1);
+pointer-events:none;
 }
-#glassWrap.open{top:12px;pointer-events:auto}
+#glassWrap.open {
+top:12px;
+pointer-events:all;
+}
 
 #glassBar{
 width:92%;max-width:1200px;height:84px;border-radius:48px;
