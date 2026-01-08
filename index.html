@@ -172,12 +172,14 @@ margin-bottom:10px
 }
 #logoPanel{
 display:inline-block;
-padding:28px 34px;
+padding:34px 40px;
 border-radius:18px;
 background:rgba(0,0,0,.7);
-box-shadow:0 20px 60px rgba(0,20,120,.36)
+box-shadow:none;
 }
-#logoPanel img{height:110px}
+#logoPanel img{
+height:160px;
+}
 
 .subtitle{
 margin-top:10px;
@@ -389,6 +391,47 @@ document.getElementById('heroClock').textContent=`${h}:${m} ${am}`;
 setInterval(updateClock,1000);
 updateClock();
 
+/* ================= GAME / APP DATA ================= */
+const GAMES = [
+  { name: "Eaglercraft", url: "https://y4b01m4tt.github.io/ubiquitous-enigma/" },
+  { name: "Retro Bowl", url: "https://y4b01m4tt.github.io/curly-journey/" },
+  { name: "Idle Dice", url: "https://y4b01m4tt.github.io/scaling-spork/" }
+];
+
+const APPS = [
+  { name: "Minesweeper", url: "https://nickarocho.github.io/minesweeper/" }
+];
+
+/* ================= RENDER HELPERS ================= */
+function makeGameButton(item){
+  const btn = document.createElement("button");
+  btn.className = "crtBtn";
+  btn.textContent = item.name;
+  btn.onclick = () => launchGame(item.url);
+  return btn;
+}
+
+function renderLists(){
+  const gamesGrid = document.getElementById("gamesGrid");
+  const appsGrid  = document.getElementById("appsGrid");
+
+  gamesGrid.innerHTML = "";
+  appsGrid.innerHTML  = "";
+
+  GAMES.forEach(g => gamesGrid.appendChild(makeGameButton(g)));
+  APPS.forEach(a => appsGrid.appendChild(makeGameButton(a)));
+}
+
+/* ================= GAME LAUNCH ================= */
+function launchGame(url){
+  document.getElementById("gameShell").classList.add("active");
+  document.getElementById("gameFrame").src = url;
+}
+
+/* render on load */
+renderLists();
+
+  
 /* PANIC */
 const flash=document.getElementById('panicFlash');
 function panic(){
