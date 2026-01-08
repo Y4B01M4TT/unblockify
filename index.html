@@ -23,7 +23,7 @@ html,body{
 margin:0;height:100%;
 background:var(--bg);
 color:var(--fg);
-font-family:system-ui,"Press Start 2P",monospace;
+font-family: "Press Start 2P", system-ui, monospace;
 overflow-x:hidden;
 }
 
@@ -222,6 +222,27 @@ height:100%;
 border:none;
 }
 
+function launchGame(src){
+  document.getElementById("gameFrame").src = src;
+  document.getElementById("gameShell").classList.add("active");
+}
+  
+const games = [
+  { name: "Eaglercraft", url: "games/eaglercraft/index.html" },
+  { name: "Retro Bowl", url: "games/retro-bowl/index.html" },
+  { name: "Idle Dice", url: "games/idle-dice/index.html" }
+];
+
+const gamesGrid = document.getElementById("gamesGrid");
+
+games.forEach(game => {
+  const btn = document.createElement("button");
+  btn.className = "crtBtn";
+  btn.textContent = game.name;
+  btn.onclick = () => launchGame(game.url);
+  gamesGrid.appendChild(btn);
+});
+
 /* ================= PANIC ================= */
 #panicFlash{
 position:fixed;
@@ -264,7 +285,7 @@ z-index:99999;
 <div id="heroClock">--:--</div>
 <div id="logoPanel"><img src="https://i.imgur.com/RIBBD4l.png"></div>
 <div class="subtitle">THE TUFFEST GAME SITE AROUND</div>
-<div class="hint" id="hintText"></div>
+<div class="hint" id="hintText"></div>#g
 </div>
 </header>
 
