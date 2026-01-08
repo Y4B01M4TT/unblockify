@@ -321,13 +321,40 @@ sandbox="allow-scripts allow-same-origin allow-forms allow-popups allow-pointer-
 <div id="panicFlash"></div>
 
 <script>
-/* MENU TOGGLE */
-const menuButton=document.getElementById('menuButton');
-const glassWrap=document.getElementById('glassWrap');
+/* ================= MENU TOGGLE ================= */
+const menuButton = document.getElementById('menuButton');
+const glassWrap  = document.getElementById('glassWrap');
+const navLinks   = document.querySelectorAll('.navLink');
+const pages      = document.querySelectorAll('.page');
 
-menuButton.onclick=()=>{
-glassWrap.classList.toggle('open');
+menuButton.onclick = () => {
+  glassWrap.classList.toggle('open');
 };
+
+/* ================= PAGE NAVIGATION ================= */
+function showPage(id){
+  pages.forEach(p => {
+    p.classList.remove('active');
+  });
+
+  const target = document.getElementById(id);
+  if (target) target.classList.add('active');
+
+  // close menu after navigation
+  glassWrap.classList.remove('open');
+
+  // scroll to top
+  window.scrollTo({ top: 0, behavior: 'smooth' });
+}
+
+/* hook up menu buttons */
+navLinks.forEach(link => {
+  link.addEventListener('click', () => {
+    const page = link.dataset.nav;
+    if (page) showPage(page);
+  });
+});
+
 
 /* ROTATING HINT TEXT */
 const hints=[
