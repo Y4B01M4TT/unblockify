@@ -8,40 +8,45 @@
 <link href="https://fonts.googleapis.com/css2?family=Press+Start+2P&display=swap" rel="stylesheet">
 
 <style>
-/* ================= ROOT THEME ================= */
+/* ================= ROOT ================= */
 :root{
 --bg:#000;
 --fg:#e6f7ff;
---glass: rgba(255,255,255,0.08);
---glass-soft: rgba(255,255,255,0.04);
---neon1: #001d77;
---neon2: #00e0c6;
+--glass-bg:rgba(255,255,255,.06);
+--glass-border:rgba(255,255,255,.14);
+--neon1:#001d77;
+--neon2:#00e0c6;
 }
 
 /* ================= RESET ================= */
 html,body{
-height:100%;
-margin:0;
+margin:0;height:100%;
 background:var(--bg);
 color:var(--fg);
-font-family:Inter,system-ui,-apple-system,Segoe UI,Roboto,"Press Start 2P",monospace;
--webkit-font-smoothing:antialiased
+font-family:system-ui,"Press Start 2P",monospace;
+overflow-x:hidden;
 }
-a{color:inherit;text-decoration:none}
+
+/* ================= PARTICLE BG ================= */
+#bgCanvas{
+position:fixed;
+inset:0;
+z-index:0;
+}
 
 /* ================= MENU BUTTON ================= */
 #menuButton{
 position:fixed;
-left:14px;top:14px;
+top:14px;left:14px;
 z-index:6000;
 width:48px;height:48px;
-border-radius:12px;
-display:grid;place-items:center;
-background:linear-gradient(180deg,rgba(255,255,255,.08),rgba(255,255,255,.03));
-border:1px solid rgba(255,255,255,.18);
+border-radius:14px;
+background:var(--glass-bg);
+border:1px solid var(--glass-border);
 backdrop-filter:blur(10px) saturate(140%);
+color:white;
+font-size:20px;
 cursor:pointer;
-box-shadow:0 8px 24px rgba(0,0,0,.6)
 }
 
 /* ================= GLASS MENU ================= */
@@ -52,221 +57,187 @@ top:-160px;
 height:140px;
 display:flex;
 justify-content:center;
-z-index:5000;
-transition:top .36s cubic-bezier(.2,.9,.2,1);
 pointer-events:none;
+transition:.35s;
+z-index:5000;
 }
 #glassWrap.open{
-top:12px;
+top:14px;
+pointer-events:auto;
 }
 
-/* IMPORTANT FIX:
-pointer-events now live on the bar itself */
 #glassBar{
-pointer-events:auto;
 width:92%;
 max-width:1200px;
 height:84px;
 border-radius:48px;
-background:linear-gradient(
-180deg,
-rgba(18,22,40,.55),
-rgba(8,10,20,.45)
-);
-border:1px solid rgba(255,255,255,.12);
+background:linear-gradient(135deg,rgba(0,29,119,.45),rgba(0,0,0,.55));
+border:1px solid var(--glass-border);
 display:flex;
 align-items:center;
-gap:18px;
-padding:10px 20px;
-box-shadow:0 10px 32px rgba(0,20,120,.25);
-backdrop-filter:blur(16px) saturate(160%);
+padding:12px 22px;
+gap:16px;
+backdrop-filter:blur(14px) saturate(160%);
 position:relative;
-overflow:hidden;
 }
 
-/* animated neon outline */
+/* animated border */
 #glassBar::after{
 content:"";
 position:absolute;
 inset:0;
 border-radius:48px;
-pointer-events:none;
-z-index:1;
-border:3px solid transparent;
+border:2px solid transparent;
 background:
 linear-gradient(#0000,#0000) padding-box,
-linear-gradient(90deg,#001d77,#00e0c6,#001d77) border-box;
+linear-gradient(90deg,var(--neon1),var(--neon2),var(--neon1)) border-box;
 background-size:200% 100%;
-animation:neonBorderCycle 6s linear infinite
+animation:borderFlow 6s linear infinite;
+pointer-events:none;
 }
-@keyframes neonBorderCycle{
-0%{background-position:0%}
-100%{background-position:200%}
+@keyframes borderFlow{
+to{background-position:200%}
 }
 
-/* keep content above border */
-#glassBar > *{
-position:relative;
-z-index:2
-}
+#glassBar>*{position:relative;z-index:1}
 
 /* ================= MENU CONTENT ================= */
-.g-left,.g-center,.g-right{
-display:flex;
-align-items:center;
-gap:12px
-}
+.g-left,.g-center,.g-right{display:flex;align-items:center;gap:12px}
 .g-center{flex:1;justify-content:center}
 .g-right{justify-content:flex-end}
 
-/* GLASS NAV BUTTONS */
 .navLink{
-font-family:'Press Start 2P';
-font-size:12px;
 padding:8px 14px;
-border-radius:10px;
-cursor:pointer;
-background:var(--glass-soft);
-border:1px solid rgba(255,255,255,.18);
-backdrop-filter:blur(10px);
-transition:all .15s ease;
-}
-.navLink:hover{
-background:var(--glass);
-box-shadow:0 0 12px rgba(0,224,198,.35);
-transform:translateY(-2px)
-}
-
-/* GLASS SEARCH */
-#menuSearch{
-width:420px;
-max-width:38vw;
-padding:10px 14px;
 border-radius:14px;
-background:var(--glass-soft);
-border:1px solid rgba(255,255,255,.18);
-color:var(--fg);
+background:var(--glass-bg);
+border:1px solid var(--glass-border);
 backdrop-filter:blur(10px);
-outline:none
-}
-
-#menuClock{
-font-family:'Press Start 2P';
+cursor:pointer;
 font-size:12px;
-color:#dff4ff
+}
+.navLink:hover{box-shadow:0 0 14px var(--neon2)}
+
+#menuSearch{
+width:420px;max-width:38vw;
+padding:10px 14px;
+border-radius:18px;
+background:var(--glass-bg);
+border:1px solid var(--glass-border);
+color:var(--fg);
+outline:none;
 }
 
-#miniLogo{height:52px}
+#menuClock{font-size:12px}
+
+#miniLogo{height:46px}
 
 /* ================= HERO ================= */
 .heroWrap{
-padding-top:80px;
+position:relative;
+z-index:2;
+padding-top:120px;
 display:flex;
-justify-content:center
+justify-content:center;
 }
 .hero{text-align:center}
-#heroClock{
-font-family:'Press Start 2P';
-font-size:13px;
-margin-bottom:10px
-}
+
+#heroClock{margin-bottom:14px;font-size:13px}
+
 #logoPanel{
-display:inline-block;
-padding:34px 40px;
-border-radius:18px;
-background:rgba(0,0,0,.7);
-box-shadow:none;
+padding:34px;
+border-radius:20px;
+background:rgba(0,0,0,.75);
 }
 #logoPanel img{
-height:160px;
+height:150px;
+filter:none; /* removes glow */
 }
 
-.subtitle{
-margin-top:10px;
-font-family:'Press Start 2P';
-font-size:12px
-}
-
-.hint{
-margin-top:12px;
-font-size:12px;
-opacity:.9;
-transition:opacity .4s
-}
+.subtitle{margin-top:14px;font-size:12px}
+.hint{margin-top:10px;font-size:11px;opacity:.8}
 
 /* ================= PAGES ================= */
-main{min-height:100vh}
-.page{display:none;opacity:0;transition:.3s}
-.page.active{display:block;opacity:1}
+main{
+position:relative;
+z-index:2;
+padding:40px 32px 80px;
+}
+.page{display:none}
+.page.active{display:block}
 
-/* ================= BUTTONS ================= */
+/* ================= GAME BUTTONS ================= */
 .grid{
 display:grid;
 grid-template-columns:repeat(auto-fit,minmax(240px,1fr));
-gap:16px
+gap:22px;
+margin-top:32px;
 }
+
 .crtBtn{
-padding:14px;
-border-radius:12px;
+padding:18px;
+border-radius:18px;
 background:linear-gradient(135deg,var(--neon1),var(--neon2));
-color:#fff;
-font-family:'Press Start 2P';
-font-size:12px;
-cursor:pointer;
+color:white;
 border:none;
-transition:.15s;
-position:relative
+font-family:'Press Start 2P';
+cursor:pointer;
 }
 .crtBtn:hover{
-box-shadow:0 0 16px #00e0c6
+box-shadow:0 0 22px var(--neon2);
 }
 
 /* ================= GAME SHELL ================= */
 #gameShell{
-position:fixed;inset:0;
-background:#000;
+position:fixed;
+inset:0;
+background:black;
 display:none;
-z-index:3000
+z-index:8000;
 }
 #gameShell.active{display:block}
 
 #gameTop{
 position:fixed;
-top:12px;left:12px;
-display:flex;gap:8px;
-z-index:3100
+top:14px;left:14px;
+display:flex;
+gap:10px;
+z-index:8100;
 }
 #gameTop button{
-font-family:'Press Start 2P';
-font-size:11px;
-padding:8px 10px;
-border-radius:8px;
-background:rgba(255,255,255,.08);
-border:1px solid rgba(255,255,255,.2);
+background:var(--glass-bg);
+border:1px solid var(--glass-border);
 backdrop-filter:blur(10px);
-color:#fff;
-cursor:pointer
+color:white;
+padding:10px;
+border-radius:12px;
+font-family:'Press Start 2P';
+cursor:pointer;
 }
 
 #gameFrame{
-position:fixed;inset:0;
-width:100%;height:100%;
-border:none
+position:fixed;
+inset:0;
+width:100%;
+height:100%;
+border:none;
 }
 
-/* ================= PANIC FLASH ================= */
+/* ================= PANIC ================= */
 #panicFlash{
-position:fixed;inset:0;
-background:#fff;
+position:fixed;
+inset:0;
+background:white;
 opacity:0;
 pointer-events:none;
-z-index:999999
+z-index:99999;
 }
 #panicFlash.active{opacity:1}
 </style>
 </head>
 
 <body>
+
+<canvas id="bgCanvas"></canvas>
 
 <button id="menuButton">☰</button>
 
@@ -277,12 +248,10 @@ z-index:999999
 <div class="navLink" data-nav="games">GAMES</div>
 <div class="navLink" data-nav="apps">APPS</div>
 </div>
-
 <div class="g-center">
 <input id="menuSearch" placeholder="Search...">
 <div id="menuClock">--:--</div>
 </div>
-
 <div class="g-right">
 <div class="navLink" data-nav="suggest">SUGGEST</div>
 <img id="miniLogo" src="https://i.imgur.com/RIBBD4l.png">
@@ -293,9 +262,7 @@ z-index:999999
 <header class="heroWrap">
 <div class="hero">
 <div id="heroClock">--:--</div>
-<div id="logoPanel">
-<img src="https://i.imgur.com/RIBBD4l.png">
-</div>
+<div id="logoPanel"><img src="https://i.imgur.com/RIBBD4l.png"></div>
 <div class="subtitle">THE TUFFEST GAME SITE AROUND</div>
 <div class="hint" id="hintText"></div>
 </div>
@@ -314,134 +281,63 @@ z-index:999999
 <button id="crtToggle">CRT</button>
 <button id="panicBtn">PANIC</button>
 </div>
-<iframe
-id="gameFrame"
-sandbox="allow-scripts allow-same-origin allow-forms allow-popups allow-pointer-lock">
-</iframe>
+<iframe id="gameFrame"
+sandbox="allow-scripts allow-same-origin allow-pointer-lock allow-popups"></iframe>
 </div>
 
 <div id="panicFlash"></div>
 
 <script>
-/* ================= MENU TOGGLE ================= */
-const menuButton = document.getElementById('menuButton');
-const glassWrap  = document.getElementById('glassWrap');
-const navLinks   = document.querySelectorAll('.navLink');
-const pages      = document.querySelectorAll('.page');
+/* ================= MENU ================= */
+const menuBtn=document.getElementById('menuButton');
+const glassWrap=document.getElementById('glassWrap');
+menuBtn.onclick=()=>glassWrap.classList.toggle('open');
 
-menuButton.onclick = () => {
-  glassWrap.classList.toggle('open');
-};
-
-/* ================= PAGE NAVIGATION ================= */
-function showPage(id){
-  pages.forEach(p => {
-    p.classList.remove('active');
-  });
-
-  const target = document.getElementById(id);
-  if (target) target.classList.add('active');
-
-  // close menu after navigation
-  glassWrap.classList.remove('open');
-
-  // scroll to top
-  window.scrollTo({ top: 0, behavior: 'smooth' });
-}
-
-/* hook up menu buttons */
-navLinks.forEach(link => {
-  link.addEventListener('click', () => {
-    const page = link.dataset.nav;
-    if (page) showPage(page);
-  });
-});
-
-
-/* ROTATING HINT TEXT */
-const hints=[
-"thanks from M ✌️",
-"make sure to interact with the three lined menu button on the top right!",
-"have fun twin!",
-"return to safety with the \"~\" key"
-];
-let i=0;
-const hintEl=document.getElementById('hintText');
-function rotateHint(){
-hintEl.style.opacity=0;
-setTimeout(()=>{
-hintEl.textContent=hints[i];
-hintEl.style.opacity=1;
-i=(i+1)%hints.length;
-},300);
-}
-rotateHint();
-setInterval(rotateHint,3000);
-
-/* CLOCK */
-function updateClock(){
+/* ================= CLOCK ================= */
+function tick(){
 const d=new Date();
-let h=d.getHours();
-const m=String(d.getMinutes()).padStart(2,"0");
-const am=h>=12?"PM":"AM";
-h=h%12||12;
-document.getElementById('menuClock').textContent=`${h}:${m} ${am}`;
-document.getElementById('heroClock').textContent=`${h}:${m} ${am}`;
+let h=d.getHours(),m=String(d.getMinutes()).padStart(2,'0');
+const am=h>=12?'PM':'AM';h=h%12||12;
+menuClock.textContent=`${h}:${m} ${am}`;
+heroClock.textContent=`${h}:${m} ${am}`;
 }
-setInterval(updateClock,1000);
-updateClock();
+setInterval(tick,1000);tick();
 
-/* ================= GAME / APP DATA ================= */
-const GAMES = [
-  { name: "Eaglercraft", url: "https://y4b01m4tt.github.io/ubiquitous-enigma/" },
-  { name: "Retro Bowl", url: "https://y4b01m4tt.github.io/curly-journey/" },
-  { name: "Idle Dice", url: "https://y4b01m4tt.github.io/scaling-spork/" }
-];
+/* ================= PARTICLES ================= */
+const c=document.getElementById('bgCanvas'),ctx=c.getContext('2d');
+let w,h,particles=[];
+function resize(){w=c.width=innerWidth;h=c.height=innerHeight}
+window.onresize=resize;resize();
 
-const APPS = [
-  { name: "Minesweeper", url: "https://nickarocho.github.io/minesweeper/" }
-];
+for(let i=0;i<80;i++)
+particles.push({x:Math.random()*w,y:Math.random()*h,vx:0,vy:0});
 
-/* ================= RENDER HELPERS ================= */
-function makeGameButton(item){
-  const btn = document.createElement("button");
-  btn.className = "crtBtn";
-  btn.textContent = item.name;
-  btn.onclick = () => launchGame(item.url);
-  return btn;
-}
+let mx=0,my=0;
+onmousemove=e=>{mx=e.clientX;my=e.clientY};
 
-function renderLists(){
-  const gamesGrid = document.getElementById("gamesGrid");
-  const appsGrid  = document.getElementById("appsGrid");
-
-  gamesGrid.innerHTML = "";
-  appsGrid.innerHTML  = "";
-
-  GAMES.forEach(g => gamesGrid.appendChild(makeGameButton(g)));
-  APPS.forEach(a => appsGrid.appendChild(makeGameButton(a)));
-}
-
-/* ================= GAME LAUNCH ================= */
-function launchGame(url){
-  document.getElementById("gameShell").classList.add("active");
-  document.getElementById("gameFrame").src = url;
-}
-
-/* render on load */
-renderLists();
-
-  
-/* PANIC */
-const flash=document.getElementById('panicFlash');
-function panic(){
-flash.classList.add("active");
-setTimeout(()=>location.href="https://classroom.google.com/h",150);
-}
-document.addEventListener("keydown",e=>{
-if(e.key==="~"||e.key==="`") panic();
+function draw(){
+ctx.clearRect(0,0,w,h);
+particles.forEach(p=>{
+const dx=mx-p.x,dy=my-p.y;
+p.vx+=dx*0.00002;p.vy+=dy*0.00002;
+p.x+=p.vx;p.y+=p.vy;
+p.vx*=0.92;p.vy*=0.92;
+if(p.x<0||p.x>w)p.x=Math.random()*w;
+if(p.y<0||p.y>h)p.y=Math.random()*h;
+ctx.fillStyle="#001d77";
+ctx.fillRect(p.x,p.y,2,2);
 });
-document.getElementById("panicBtn").onclick=panic;
+requestAnimationFrame(draw);
+}
+draw();
+
+/* ================= PANIC ================= */
+function panic(){
+panicFlash.classList.add('active');
+setTimeout(()=>location.href='https://classroom.google.com/h',150);
+}
+onkeydown=e=>{if(e.key==='`'||e.key==='~')panic()};
+panicBtn.onclick=panic;
 </script>
 
 </body>
