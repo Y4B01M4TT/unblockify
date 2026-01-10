@@ -63,7 +63,11 @@ width:92%;
 max-width:1200px;
 height:84px;
 border-radius:48px;
-background:linear-gradient(135deg,rgba(0,29,119,.45),rgba(0,0,0,.55));
+background:linear-gradient(
+  135deg,
+  rgba(12, 24, 74, 0.75),
+  rgba(4, 8, 24, 0.85)
+);
 border:1px solid var(--glass-border);
 display:flex;
 align-items:center;
@@ -172,6 +176,44 @@ pointer-events:none;
 z-index:99999;
 }
 #panicFlash.active{opacity:1}
+
+#heroClock{margin-top:-38px}
+
+/* GAME SHELL */
+#gameShell{
+position:fixed;
+inset:0;
+background:black;
+display:none;
+z-index:8000;
+}
+#gameShell.active{display:block}
+
+#gameTop{
+position:fixed;
+top:14px;left:14px;
+display:flex;
+gap:10px;
+z-index:8100;
+}
+#gameTop button{
+background:var(--glass-bg);
+border:1px solid var(--glass-border);
+backdrop-filter:blur(10px);
+color:white;
+padding:10px;
+border-radius:12px;
+font-family:'Press Start 2P';
+cursor:pointer;
+}
+
+#gameFrame{
+position:fixed;
+inset:0;
+width:100%;
+height:100%;
+border:none;
+}
 </style>
 </head>
 
@@ -184,16 +226,16 @@ z-index:99999;
 <div id="glassWrap">
 <div id="glassBar">
 <div class="g-left">
-<div class="navLink">HOME</div>
-<div class="navLink">GAMES</div>
-<div class="navLink">APPS</div>
+<div class="navLink" data-nav="home">HOME</div>
+<div class="navLink" data-nav="games">GAMES</div>
+<div class="navLink" data-nav="apps">APPS</div>
 </div>
 <div class="g-center">
 <input id="menuSearch" placeholder="Search...">
 <div id="menuClock">--:--</div>
 </div>
 <div class="g-right">
-<div class="navLink">SUGGEST</div>
+<div class="navLink" data-nav="suggest">SUGGEST</div>
 <img id="miniLogo" src="https://i.imgur.com/RIBBD4l.png">
 </div>
 </div>
@@ -208,11 +250,35 @@ z-index:99999;
 </div>
 </header>
 
+<main>
+<section class="page active" id="home"></section>
+
+<section class="page" id="games">
+  <div class="grid" id="gamesGrid"></div>
+</section>
+
+<section class="page" id="apps">
+  <div class="grid" id="appsGrid"></div>
+</section>
+
+<section class="page" id="suggest"></section>
+</main>
+
+<div id="gameShell">
+<div id="gameTop">
+<button id="backBtn">← Back</button>
+</div>
+<iframe id="gameFrame"
+sandbox="allow-scripts allow-same-origin allow-pointer-lock allow-popups"></iframe>
+</div>
+
+<div id="panicFlash"></div>
+
 <script>
-/* ================= MENU ================= */
+/* MENU */
 menuButton.onclick=()=>glassWrap.classList.toggle('open');
 
-/* ================= CLOCK ================= */
+/* CLOCK */
 function tick(){
 const d=new Date();
 let h=d.getHours(),m=String(d.getMinutes()).padStart(2,'0');
@@ -222,10 +288,9 @@ heroClock.textContent=`${h}:${m} ${am}`;
 }
 setInterval(tick,1000);tick();
 
-/* ================= PARTICLE NETWORK ================= */
+/* PARTICLES (unchanged) */
 const canvas=document.getElementById("bgCanvas");
 const ctx=canvas.getContext("2d");
-
 let w,h,dpr;
 const particles=[];
 const COUNT=120;
@@ -300,6 +365,31 @@ loop();
 
 addEventListener("mousemove",e=>{mouse.x=e.clientX;mouse.y=e.clientY});
 addEventListener("mouseleave",()=>mouse.x=null);
+
+/* GAMES */
+function launchGame(src){
+gameFrame.src=src;
+gameShell.classList.add("active");
+}
+
+const games=[
+{name:"Eaglercraft",url:"games/eaglercraft/index.html"},
+{name:"Retro Bowl",url:"games/retro-bowl/index.html"},
+{name:"Idle Dice",url:"games/idle-dice/index.html"}
+];
+
+games.forEach(g=>{
+const b=document.createElement("button");
+b.className="crtBtn";
+b.textContent=g.name;
+b.onclick=()=>launchGame(g.url);
+gamesGrid.appendChild(b);
+});
+
+backBtn.onclick=()=>{
+gameFrame.src="";
+gameShell.classList.remove("active");
+};
 </script>
 
 </body>
