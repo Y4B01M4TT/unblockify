@@ -8,7 +8,6 @@
 <link href="https://fonts.googleapis.com/css2?family=Press+Start+2P&display=swap" rel="stylesheet">
 
 <style>
-/* ================= ROOT ================= */
 :root{
 --bg:#000;
 --fg:#e6f7ff;
@@ -18,23 +17,20 @@
 --neon2:#00e0c6;
 }
 
-/* ================= RESET ================= */
 html,body{
 margin:0;height:100%;
 background:var(--bg);
 color:var(--fg);
-font-family: "Press Start 2P", system-ui, monospace;
+font-family:"Press Start 2P",system-ui,monospace;
 overflow-x:hidden;
 }
 
-/* ================= PARTICLE BG ================= */
 #bgCanvas{
 position:fixed;
 inset:0;
 z-index:0;
 }
 
-/* ================= MENU BUTTON ================= */
 #menuButton{
 position:fixed;
 top:14px;left:14px;
@@ -49,7 +45,6 @@ font-size:20px;
 cursor:pointer;
 }
 
-/* ================= GLASS MENU ================= */
 #glassWrap{
 position:fixed;
 left:0;right:0;
@@ -61,10 +56,7 @@ pointer-events:none;
 transition:.35s;
 z-index:5000;
 }
-#glassWrap.open{
-top:14px;
-pointer-events:auto;
-}
+#glassWrap.open{top:14px;pointer-events:auto}
 
 #glassBar{
 width:92%;
@@ -81,7 +73,6 @@ backdrop-filter:blur(14px) saturate(160%);
 position:relative;
 }
 
-/* animated border */
 #glassBar::after{
 content:"";
 position:absolute;
@@ -95,13 +86,10 @@ background-size:200% 100%;
 animation:borderFlow 6s linear infinite;
 pointer-events:none;
 }
-@keyframes borderFlow{
-to{background-position:200%}
-}
+@keyframes borderFlow{to{background-position:200%}}
 
 #glassBar>*{position:relative;z-index:1}
 
-/* ================= MENU CONTENT ================= */
 .g-left,.g-center,.g-right{display:flex;align-items:center;gap:12px}
 .g-center{flex:1;justify-content:center}
 .g-right{justify-content:flex-end}
@@ -127,11 +115,9 @@ color:var(--fg);
 outline:none;
 }
 
-#menuClock{font-size:12px}
-
+#menuClock,#heroClock{font-size:12px}
 #miniLogo{height:46px}
 
-/* ================= HERO ================= */
 .heroWrap{
 position:relative;
 z-index:2;
@@ -141,22 +127,16 @@ justify-content:center;
 }
 .hero{text-align:center}
 
-#heroClock{margin-bottom:14px;font-size:13px}
-
 #logoPanel{
 padding:34px;
 border-radius:20px;
 background:rgba(0,0,0,.75);
 }
-#logoPanel img{
-height:150px;
-filter:none; /* removes glow */
-}
+#logoPanel img{height:150px}
 
 .subtitle{margin-top:14px;font-size:12px}
 .hint{margin-top:10px;font-size:11px;opacity:.8}
 
-/* ================= PAGES ================= */
 main{
 position:relative;
 z-index:2;
@@ -165,7 +145,6 @@ padding:40px 32px 80px;
 .page{display:none}
 .page.active{display:block}
 
-/* ================= GAME BUTTONS ================= */
 .grid{
 display:grid;
 grid-template-columns:repeat(auto-fit,minmax(240px,1fr));
@@ -182,68 +161,8 @@ border:none;
 font-family:'Press Start 2P';
 cursor:pointer;
 }
-.crtBtn:hover{
-box-shadow:0 0 22px var(--neon2);
-}
+.crtBtn:hover{box-shadow:0 0 22px var(--neon2)}
 
-/* ================= GAME SHELL ================= */
-#gameShell{
-position:fixed;
-inset:0;
-background:black;
-display:none;
-z-index:8000;
-}
-#gameShell.active{display:block}
-
-#gameTop{
-position:fixed;
-top:14px;left:14px;
-display:flex;
-gap:10px;
-z-index:8100;
-}
-#gameTop button{
-background:var(--glass-bg);
-border:1px solid var(--glass-border);
-backdrop-filter:blur(10px);
-color:white;
-padding:10px;
-border-radius:12px;
-font-family:'Press Start 2P';
-cursor:pointer;
-}
-
-#gameFrame{
-position:fixed;
-inset:0;
-width:100%;
-height:100%;
-border:none;
-}
-
-function launchGame(src){
-  document.getElementById("gameFrame").src = src;
-  document.getElementById("gameShell").classList.add("active");
-}
-  
-const games = [
-  { name: "Eaglercraft", url: "games/eaglercraft/index.html" },
-  { name: "Retro Bowl", url: "games/retro-bowl/index.html" },
-  { name: "Idle Dice", url: "games/idle-dice/index.html" }
-];
-
-const gamesGrid = document.getElementById("gamesGrid");
-
-games.forEach(game => {
-  const btn = document.createElement("button");
-  btn.className = "crtBtn";
-  btn.textContent = game.name;
-  btn.onclick = () => launchGame(game.url);
-  gamesGrid.appendChild(btn);
-});
-
-/* ================= PANIC ================= */
 #panicFlash{
 position:fixed;
 inset:0;
@@ -265,16 +184,16 @@ z-index:99999;
 <div id="glassWrap">
 <div id="glassBar">
 <div class="g-left">
-<div class="navLink" data-nav="home">HOME</div>
-<div class="navLink" data-nav="games">GAMES</div>
-<div class="navLink" data-nav="apps">APPS</div>
+<div class="navLink">HOME</div>
+<div class="navLink">GAMES</div>
+<div class="navLink">APPS</div>
 </div>
 <div class="g-center">
 <input id="menuSearch" placeholder="Search...">
 <div id="menuClock">--:--</div>
 </div>
 <div class="g-right">
-<div class="navLink" data-nav="suggest">SUGGEST</div>
+<div class="navLink">SUGGEST</div>
 <img id="miniLogo" src="https://i.imgur.com/RIBBD4l.png">
 </div>
 </div>
@@ -285,34 +204,13 @@ z-index:99999;
 <div id="heroClock">--:--</div>
 <div id="logoPanel"><img src="https://i.imgur.com/RIBBD4l.png"></div>
 <div class="subtitle">THE TUFFEST GAME SITE AROUND</div>
-<div class="hint" id="hintText"></div>#g
+<div class="hint" id="hintText"></div>
 </div>
 </header>
 
-<main>
-<section class="page active" id="home"></section>
-<section class="page" id="games"><div class="grid" id="gamesGrid"></div></section>
-<section class="page" id="apps"><div class="grid" id="appsGrid"></div></section>
-<section class="page" id="suggest"></section>
-</main>
-
-<div id="gameShell">
-<div id="gameTop">
-<button id="backBtn">← Back</button>
-<button id="crtToggle">CRT</button>
-<button id="panicBtn">PANIC</button>
-</div>
-<iframe id="gameFrame"
-sandbox="allow-scripts allow-same-origin allow-pointer-lock allow-popups"></iframe>
-</div>
-
-<div id="panicFlash"></div>
-
 <script>
 /* ================= MENU ================= */
-const menuBtn=document.getElementById('menuButton');
-const glassWrap=document.getElementById('glassWrap');
-menuBtn.onclick=()=>glassWrap.classList.toggle('open');
+menuButton.onclick=()=>glassWrap.classList.toggle('open');
 
 /* ================= CLOCK ================= */
 function tick(){
@@ -324,41 +222,84 @@ heroClock.textContent=`${h}:${m} ${am}`;
 }
 setInterval(tick,1000);tick();
 
-/* ================= PARTICLES ================= */
-const c=document.getElementById('bgCanvas'),ctx=c.getContext('2d');
-let w,h,particles=[];
-function resize(){w=c.width=innerWidth;h=c.height=innerHeight}
-window.onresize=resize;resize();
+/* ================= PARTICLE NETWORK ================= */
+const canvas=document.getElementById("bgCanvas");
+const ctx=canvas.getContext("2d");
 
-for(let i=0;i<80;i++)
-particles.push({x:Math.random()*w,y:Math.random()*h,vx:0,vy:0});
+let w,h,dpr;
+const particles=[];
+const COUNT=120;
+const LINK=140;
+const CURSOR=180;
+const mouse={x:null,y:null};
 
-let mx=0,my=0;
-onmousemove=e=>{mx=e.clientX;my=e.clientY};
+function resize(){
+dpr=window.devicePixelRatio||1;
+w=innerWidth;h=innerHeight;
+canvas.width=w*dpr;canvas.height=h*dpr;
+canvas.style.width=w+"px";canvas.style.height=h+"px";
+ctx.setTransform(dpr,0,0,dpr,0,0);
+}
+addEventListener("resize",resize);resize();
 
-function draw(){
+class P{
+constructor(){
+this.x=Math.random()*w;
+this.y=Math.random()*h;
+this.vx=(Math.random()-.5)*.4;
+this.vy=(Math.random()-.5)*.4;
+this.r=1.6;
+}
+update(){
+this.x+=this.vx;this.y+=this.vy;
+if(this.x<0||this.x>w)this.vx*=-1;
+if(this.y<0||this.y>h)this.vy*=-1;
+if(mouse.x!==null){
+const dx=mouse.x-this.x,dy=mouse.y-this.y;
+const d=Math.hypot(dx,dy);
+if(d<CURSOR){
+const f=(CURSOR-d)/CURSOR;
+this.x-=dx*f*.015;
+this.y-=dy*f*.015;
+}
+}
+}
+draw(){
+ctx.beginPath();
+ctx.arc(this.x,this.y,this.r,0,Math.PI*2);
+ctx.fillStyle="rgba(255,255,255,.85)";
+ctx.fill();
+}
+}
+
+for(let i=0;i<COUNT;i++)particles.push(new P());
+
+function links(){
+for(let i=0;i<particles.length;i++)
+for(let j=i+1;j<particles.length;j++){
+const a=particles[i],b=particles[j];
+const d=Math.hypot(a.x-b.x,a.y-b.y);
+if(d<LINK){
+ctx.strokeStyle=`rgba(255,255,255,${(1-d/LINK)*.25})`;
+ctx.beginPath();
+ctx.moveTo(a.x,a.y);
+ctx.lineTo(b.x,b.y);
+ctx.stroke();
+}
+}
+}
+
+function loop(){
 ctx.clearRect(0,0,w,h);
-particles.forEach(p=>{
-const dx=mx-p.x,dy=my-p.y;
-p.vx+=dx*0.00002;p.vy+=dy*0.00002;
-p.x+=p.vx;p.y+=p.vy;
-p.vx*=0.92;p.vy*=0.92;
-if(p.x<0||p.x>w)p.x=Math.random()*w;
-if(p.y<0||p.y>h)p.y=Math.random()*h;
-ctx.fillStyle="#001d77";
-ctx.fillRect(p.x,p.y,2,2);
-});
-requestAnimationFrame(draw);
+particles.forEach(p=>p.update());
+links();
+particles.forEach(p=>p.draw());
+requestAnimationFrame(loop);
 }
-draw();
+loop();
 
-/* ================= PANIC ================= */
-function panic(){
-panicFlash.classList.add('active');
-setTimeout(()=>location.href='https://classroom.google.com/h',150);
-}
-onkeydown=e=>{if(e.key==='`'||e.key==='~')panic()};
-panicBtn.onclick=panic;
+addEventListener("mousemove",e=>{mouse.x=e.clientX;mouse.y=e.clientY});
+addEventListener("mouseleave",()=>mouse.x=null);
 </script>
 
 </body>
