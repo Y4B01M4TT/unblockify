@@ -277,6 +277,20 @@ sandbox="allow-scripts allow-same-origin allow-pointer-lock allow-popups"></ifra
 <script>
 /* MENU */
 menuButton.onclick=()=>glassWrap.classList.toggle('open');
+/* PAGE NAVIGATION */
+const pages = document.querySelectorAll(".page");
+const navLinks = document.querySelectorAll(".navLink[data-nav]");
+
+function showPage(id){
+  pages.forEach(p => p.classList.remove("active"));
+  const page = document.getElementById(id);
+  if(page) page.classList.add("active");
+  glassWrap.classList.remove("open");
+}
+
+navLinks.forEach(link=>{
+  link.onclick = () => showPage(link.dataset.nav);
+});
 
 /* CLOCK */
 function tick(){
