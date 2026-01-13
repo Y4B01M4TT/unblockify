@@ -59,22 +59,18 @@ z-index:5000;
 #glassWrap.open{top:14px;pointer-events:auto}
 
 #glassBar{
-width:92%;
-max-width:1200px;
-height:84px;
-border-radius:48px;
-background:linear-gradient(
-  135deg,
-  rgba(12, 24, 74, 0.75),
-  rgba(4, 8, 24, 0.85)
-);
-border:1px solid var(--glass-border);
-display:flex;
-align-items:center;
-padding:12px 22px;
-gap:16px;
-backdrop-filter:blur(14px) saturate(160%);
-position:relative;
+  width:92%;
+  max-width:1200px;
+  height:84px;
+  border-radius:48px;
+  background:rgba(255,255,255,.06);
+  border:1px solid rgba(255,255,255,.18);
+  display:flex;
+  align-items:center;
+  padding:12px 22px;
+  gap:16px;
+  backdrop-filter:blur(18px) saturate(160%);
+  position:relative;
 }
 
 #glassBar::after{
@@ -157,15 +153,39 @@ margin-top:32px;
 }
 
 .crtBtn{
-padding:18px;
-border-radius:18px;
-background:linear-gradient(135deg,var(--neon1),var(--neon2));
-color:white;
-border:none;
-font-family:'Press Start 2P';
-cursor:pointer;
+  padding:18px;
+  border-radius:18px;
+  background:rgba(255,255,255,.08);
+  color:white;
+  border:1px solid rgba(255,255,255,.18);
+  backdrop-filter:blur(12px) saturate(150%);
+  font-family:'Press Start 2P';
+  cursor:pointer;
+  position:relative;
+  overflow:hidden;
 }
-.crtBtn:hover{box-shadow:0 0 22px var(--neon2)}
+
+/* subtle glass glow */
+.crtBtn::after{
+  content:"";
+  position:absolute;
+  inset:0;
+  border-radius:18px;
+  pointer-events:none;
+  background:linear-gradient(
+    120deg,
+    rgba(0,224,198,.25),
+    rgba(0,29,119,.15),
+    rgba(0,224,198,.25)
+  );
+  opacity:.35;
+}
+
+.crtBtn:hover{
+  box-shadow:
+    0 0 18px rgba(0,224,198,.6),
+    inset 0 0 12px rgba(255,255,255,.08);
+}
 
 #panicFlash{
 position:fixed;
@@ -381,7 +401,10 @@ addEventListener("mousemove",e=>{mouse.x=e.clientX;mouse.y=e.clientY});
 addEventListener("mouseleave",()=>mouse.x=null);
 
 /* GAMES */
+<script>
 function launchGame(src){
+  const returnURL = location.href;
+
   document.open();
   document.write(`
     <!doctype html>
@@ -395,7 +418,9 @@ function launchGame(src){
             height:100%;
             background:black;
             overflow:hidden;
+            font-family: system-ui, sans-serif;
           }
+
           iframe{
             position:fixed;
             inset:0;
@@ -403,12 +428,53 @@ function launchGame(src){
             height:100%;
             border:none;
           }
+
+          /* Glass back button */
+          #backBtn{
+            position:fixed;
+            top:14px;
+            left:14px;
+            z-index:9999;
+            padding:10px 14px;
+            border-radius:14px;
+            background:rgba(255,255,255,.08);
+            border:1px solid rgba(255,255,255,.18);
+            backdrop-filter:blur(12px) saturate(150%);
+            color:white;
+            font-size:14px;
+            cursor:pointer;
+            display:flex;
+            align-items:center;
+            gap:6px;
+          }
+
+          #backBtn:hover{
+            box-shadow:0 0 16px rgba(0,224,198,.6);
+          }
         </style>
       </head>
       <body>
+
+        <button id="backBtn">← Back</button>
+
         <iframe src="${src}"
           sandbox="allow-scripts allow-same-origin allow-pointer-lock allow-popups">
         </iframe>
+
+        <script>
+          // Back to Unblockify
+          document.getElementById("backBtn").onclick = () => {
+            location.href = "${returnURL}";
+          };
+
+          // Panic switch ( \` or ~ )
+          document.addEventListener("keydown", e => {
+            if (e.key === "\`" || e.key === "~") {
+              location.replace("https://classroom.google.com");
+            }
+          });
+        <\/script>
+
       </body>
     </html>
   `);
