@@ -3,7 +3,8 @@
 <head>
 <meta charset="utf-8" />
 <meta name="viewport" content="width=device-width,initial-scale=1" />
-<title>unblockify!</title>
+<title>Unblockify — TUFF Games</title>
+<title>Unblockify!</title>
 
 <link href="https://fonts.googleapis.com/css2?family=Press+Start+2P&display=swap" rel="stylesheet">
 
@@ -59,18 +60,22 @@ z-index:5000;
 #glassWrap.open{top:14px;pointer-events:auto}
 
 #glassBar{
-  width:92%;
-  max-width:1200px;
-  height:84px;
-  border-radius:48px;
-  background:rgba(255,255,255,.06);
-  border:1px solid rgba(255,255,255,.18);
-  display:flex;
-  align-items:center;
-  padding:12px 22px;
-  gap:16px;
-  backdrop-filter:blur(18px) saturate(160%);
-  position:relative;
+width:92%;
+max-width:1200px;
+height:84px;
+border-radius:48px;
+background:linear-gradient(
+  135deg,
+  rgba(12, 24, 74, 0.75),
+  rgba(4, 8, 24, 0.85)
+);
+border:1px solid var(--glass-border);
+display:flex;
+align-items:center;
+padding:12px 22px;
+gap:16px;
+backdrop-filter:blur(14px) saturate(160%);
+position:relative;
 }
 
 #glassBar::after{
@@ -153,39 +158,15 @@ margin-top:32px;
 }
 
 .crtBtn{
-  padding:18px;
-  border-radius:18px;
-  background:rgba(255,255,255,.08);
-  color:white;
-  border:1px solid rgba(255,255,255,.18);
-  backdrop-filter:blur(12px) saturate(150%);
-  font-family:'Press Start 2P';
-  cursor:pointer;
-  position:relative;
-  overflow:hidden;
+padding:18px;
+border-radius:18px;
+background:linear-gradient(135deg,var(--neon1),var(--neon2));
+color:white;
+border:none;
+font-family:'Press Start 2P';
+cursor:pointer;
 }
-
-/* subtle glass glow */
-.crtBtn::after{
-  content:"";
-  position:absolute;
-  inset:0;
-  border-radius:18px;
-  pointer-events:none;
-  background:linear-gradient(
-    120deg,
-    rgba(0,224,198,.25),
-    rgba(0,29,119,.15),
-    rgba(0,224,198,.25)
-  );
-  opacity:.35;
-}
-
-.crtBtn:hover{
-  box-shadow:
-    0 0 18px rgba(0,224,198,.6),
-    inset 0 0 12px rgba(255,255,255,.08);
-}
+.crtBtn:hover{box-shadow:0 0 22px var(--neon2)}
 
 #panicFlash{
 position:fixed;
@@ -199,96 +180,98 @@ z-index:99999;
 
 #heroClock{margin-top:-38px}
 
-<script>
-/* GAMES — ABOUT:BLANK MODE */
+/* GAME SHELL */
+#gameShell{
+position:fixed;
+inset:0;
+background:black;
+display:none;
+z-index:8000;
+}
+#gameShell.active{display:block}
 
-function launchGame(src){
-  const returnURL = location.href;
-
-  document.open();
-  document.write(`
-<!doctype html>
-<html lang="en">
-<head>
-<meta charset="utf-8">
-<title>Game</title>
-<style>
-html,body{
-  margin:0;
-  width:100%;
-  height:100%;
-  background:black;
-  overflow:hidden;
-  font-family:'Press Start 2P', system-ui;
+#gameTop{
+position:fixed;
+top:14px;left:14px;
+display:flex;
+gap:10px;
+z-index:8100;
+}
+#gameTop button{
+background:var(--glass-bg);
+border:1px solid var(--glass-border);
+backdrop-filter:blur(10px);
+color:white;
+padding:10px;
+border-radius:12px;
+font-family:'Press Start 2P';
+cursor:pointer;
 }
 
-/* glass back button */
-#backBtn{
-  position:fixed;
-  top:14px;
-  left:14px;
-  z-index:9999;
-  padding:10px 16px;
-  border-radius:14px;
-  background:rgba(255,255,255,.08);
-  border:1px solid rgba(255,255,255,.18);
-  backdrop-filter:blur(14px) saturate(160%);
-  color:white;
-  cursor:pointer;
-  display:flex;
-  align-items:center;
-  gap:8px;
-}
-
-#backBtn:hover{
-  box-shadow:0 0 18px rgba(0,224,198,.6);
-}
-
-iframe{
-  position:fixed;
-  inset:0;
-  width:100%;
-  height:100%;
-  border:none;
+#gameFrame{
+position:fixed;
+inset:0;
+width:100%;
+height:100%;
+border:none;
 }
 </style>
 </head>
 
 <body>
 
+<canvas id="bgCanvas"></canvas>
+
+<button id="menuButton">☰</button>
+
+<div id="glassWrap">
+<div id="glassBar">
+<div class="g-left">
+<div class="navLink" data-nav="home">HOME</div>
+<div class="navLink" data-nav="games">GAMES</div>
+<div class="navLink" data-nav="apps">APPS</div>
+</div>
+<div class="g-center">
+<input id="menuSearch" placeholder="Search...">
+<div id="menuClock">--:--</div>
+</div>
+<div class="g-right">
+<div class="navLink" data-nav="suggest">SUGGEST</div>
+<img id="miniLogo" src="https://i.imgur.com/RIBBD4l.png">
+</div>
+</div>
+</div>
+
+<header class="heroWrap">
+<div class="hero">
+<div id="heroClock">--:--</div>
+<div id="logoPanel"><img src="https://i.imgur.com/RIBBD4l.png"></div>
+<div class="subtitle">THE TUFFEST GAME SITE AROUND</div>
+<div class="hint" id="hintText"></div>
+</div>
+</header>
+
+<main>
+<section class="page active" id="home"></section>
+
+<section class="page" id="games">
+  <div class="grid" id="gamesGrid"></div>
+</section>
+
+<section class="page" id="apps">
+  <div class="grid" id="appsGrid"></div>
+</section>
+
+<section class="page" id="suggest"></section>
+</main>
+
+<div id="gameShell">
+<div id="gameTop">
 <button id="backBtn">← Back</button>
-
-<iframe src="${src}"
-sandbox="allow-scripts allow-same-origin allow-pointer-lock allow-popups">
-</iframe>
-
-<script>
-document.getElementById("backBtn").onclick = () => {
-  location.href = "${returnURL}";
-};
-<\/script>
-
-</body>
-</html>
-  `);
-  document.close();
-}
-
-/* GAME LIST */
-const games=[
-  {name:"Eaglercraft",url:"games/eaglercraft/index.html"},
-  {name:"Retro Bowl",url:"games/retro-bowl/index.html"},
-  {name:"Idle Dice",url:"games/idle-dice/index.html"}
-];
-
-games.forEach(g=>{
-  const b=document.createElement("button");
-  b.className="crtBtn";
-  b.textContent=g.name;
-  b.onclick=()=>launchGame(g.url);
-  gamesGrid.appendChild(b);
-});
-</script>
+</div>
+<iframe id="gameFrame"
+sandbox="allow-scripts allow-same-origin allow-pointer-lock allow-popups"></iframe>
+</div>
 
 <div id="panicFlash"></div>
 
@@ -399,10 +382,9 @@ addEventListener("mousemove",e=>{mouse.x=e.clientX;mouse.y=e.clientY});
 addEventListener("mouseleave",()=>mouse.x=null);
 
 /* GAMES */
-<script>
 function launchGame(src){
-  const returnURL = location.href;
-
+gameFrame.src=src;
+gameShell.classList.add("active");
   document.open();
   document.write(`
     <!doctype html>
@@ -416,9 +398,7 @@ function launchGame(src){
             height:100%;
             background:black;
             overflow:hidden;
-            font-family: system-ui, sans-serif;
           }
-
           iframe{
             position:fixed;
             inset:0;
@@ -426,53 +406,12 @@ function launchGame(src){
             height:100%;
             border:none;
           }
-
-          /* Glass back button */
-          #backBtn{
-            position:fixed;
-            top:14px;
-            left:14px;
-            z-index:9999;
-            padding:10px 14px;
-            border-radius:14px;
-            background:rgba(255,255,255,.08);
-            border:1px solid rgba(255,255,255,.18);
-            backdrop-filter:blur(12px) saturate(150%);
-            color:white;
-            font-size:14px;
-            cursor:pointer;
-            display:flex;
-            align-items:center;
-            gap:6px;
-          }
-
-          #backBtn:hover{
-            box-shadow:0 0 16px rgba(0,224,198,.6);
-          }
         </style>
       </head>
       <body>
-
-        <button id="backBtn">← Back</button>
-
         <iframe src="${src}"
           sandbox="allow-scripts allow-same-origin allow-pointer-lock allow-popups">
         </iframe>
-
-        <script>
-          // Back to Unblockify
-          document.getElementById("backBtn").onclick = () => {
-            location.href = "${returnURL}";
-          };
-
-          // Panic switch ( \` or ~ )
-          document.addEventListener("keydown", e => {
-            if (e.key === "\`" || e.key === "~") {
-              location.replace("https://classroom.google.com");
-            }
-          });
-        <\/script>
-
       </body>
     </html>
   `);
@@ -500,4 +439,3 @@ gameShell.classList.remove("active");
 </script>
 
 </body>
-</html>
