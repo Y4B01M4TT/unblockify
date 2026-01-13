@@ -199,98 +199,96 @@ z-index:99999;
 
 #heroClock{margin-top:-38px}
 
-/* GAME SHELL */
-#gameShell{
-position:fixed;
-inset:0;
-background:black;
-display:none;
-z-index:8000;
-}
-#gameShell.active{display:block}
+<script>
+/* GAMES — ABOUT:BLANK MODE */
 
-#gameTop{
-position:fixed;
-top:14px;left:14px;
-display:flex;
-gap:10px;
-z-index:8100;
-}
-#gameTop button{
-background:var(--glass-bg);
-border:1px solid var(--glass-border);
-backdrop-filter:blur(10px);
-color:white;
-padding:10px;
-border-radius:12px;
-font-family:'Press Start 2P';
-cursor:pointer;
+function launchGame(src){
+  const returnURL = location.href;
+
+  document.open();
+  document.write(`
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>Game</title>
+<style>
+html,body{
+  margin:0;
+  width:100%;
+  height:100%;
+  background:black;
+  overflow:hidden;
+  font-family:'Press Start 2P', system-ui;
 }
 
-#gameFrame{
-position:fixed;
-inset:0;
-width:100%;
-height:100%;
-border:none;
+/* glass back button */
+#backBtn{
+  position:fixed;
+  top:14px;
+  left:14px;
+  z-index:9999;
+  padding:10px 16px;
+  border-radius:14px;
+  background:rgba(255,255,255,.08);
+  border:1px solid rgba(255,255,255,.18);
+  backdrop-filter:blur(14px) saturate(160%);
+  color:white;
+  cursor:pointer;
+  display:flex;
+  align-items:center;
+  gap:8px;
+}
+
+#backBtn:hover{
+  box-shadow:0 0 18px rgba(0,224,198,.6);
+}
+
+iframe{
+  position:fixed;
+  inset:0;
+  width:100%;
+  height:100%;
+  border:none;
 }
 </style>
 </head>
 
 <body>
 
-<canvas id="bgCanvas"></canvas>
-
-<button id="menuButton">☰</button>
-
-<div id="glassWrap">
-<div id="glassBar">
-<div class="g-left">
-<div class="navLink" data-nav="home">HOME</div>
-<div class="navLink" data-nav="games">GAMES</div>
-<div class="navLink" data-nav="apps">APPS</div>
-</div>
-<div class="g-center">
-<input id="menuSearch" placeholder="Search...">
-<div id="menuClock">--:--</div>
-</div>
-<div class="g-right">
-<div class="navLink" data-nav="suggest">SUGGEST</div>
-<img id="miniLogo" src="https://i.imgur.com/RIBBD4l.png">
-</div>
-</div>
-</div>
-
-<header class="heroWrap">
-<div class="hero">
-<div id="heroClock">--:--</div>
-<div id="logoPanel"><img src="https://i.imgur.com/RIBBD4l.png"></div>
-<div class="subtitle">THE TUFFEST GAME SITE AROUND</div>
-<div class="hint" id="hintText"></div>
-</div>
-</header>
-
-<main>
-<section class="page active" id="home"></section>
-
-<section class="page" id="games">
-  <div class="grid" id="gamesGrid"></div>
-</section>
-
-<section class="page" id="apps">
-  <div class="grid" id="appsGrid"></div>
-</section>
-
-<section class="page" id="suggest"></section>
-</main>
-
-<div id="gameShell">
-<div id="gameTop">
 <button id="backBtn">← Back</button>
-</div>
-<iframe id="gameFrame"
-sandbox="allow-scripts allow-same-origin allow-pointer-lock allow-popups"></iframe>
-</div>
+
+<iframe src="${src}"
+sandbox="allow-scripts allow-same-origin allow-pointer-lock allow-popups">
+</iframe>
+
+<script>
+document.getElementById("backBtn").onclick = () => {
+  location.href = "${returnURL}";
+};
+<\/script>
+
+</body>
+</html>
+  `);
+  document.close();
+}
+
+/* GAME LIST */
+const games=[
+  {name:"Eaglercraft",url:"games/eaglercraft/index.html"},
+  {name:"Retro Bowl",url:"games/retro-bowl/index.html"},
+  {name:"Idle Dice",url:"games/idle-dice/index.html"}
+];
+
+games.forEach(g=>{
+  const b=document.createElement("button");
+  b.className="crtBtn";
+  b.textContent=g.name;
+  b.onclick=()=>launchGame(g.url);
+  gamesGrid.appendChild(b);
+});
+</script>
 
 <div id="panicFlash"></div>
 
