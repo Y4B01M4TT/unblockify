@@ -9,86 +9,90 @@
 
 <style>
 :root{
---bg:#000;
---fg:#e6f7ff;
---glass-bg:rgba(255,255,255,.06);
---glass-border:rgba(255,255,255,.14);
---neon1:#001d77;
---neon2:#00e0c6;
+  --bg:#000;
+  --fg:#e6f7ff;
+  --glass-bg:rgba(255,255,255,.06);
+  --glass-border:rgba(255,255,255,.14);
+  --neon1:#001d77;
+  --neon2:#00e0c6;
 }
 
 html,body{
-margin:0;height:100%;
-background:var(--bg);
-color:var(--fg);
-font-family:"Press Start 2P",system-ui,monospace;
-overflow-x:hidden;
+  margin:0;
+  height:100%;
+  background:var(--bg);
+  color:var(--fg);
+  font-family:"Press Start 2P",system-ui,monospace;
+  overflow-x:hidden;
 }
 
+/* BACKGROUND */
 #bgCanvas{
-position:fixed;
-inset:0;
-z-index:0;
+  position:fixed;
+  inset:0;
+  z-index:0;
 }
 
+/* MENU BUTTON */
 #menuButton{
-position:fixed;
-top:14px;left:14px;
-z-index:6000;
-width:48px;height:48px;
-border-radius:14px;
-background:var(--glass-bg);
-border:1px solid var(--glass-border);
-backdrop-filter:blur(10px) saturate(140%);
-color:white;
-font-size:20px;
-cursor:pointer;
+  position:fixed;
+  top:14px;left:14px;
+  z-index:6000;
+  width:48px;height:48px;
+  border-radius:14px;
+  background:var(--glass-bg);
+  border:1px solid var(--glass-border);
+  backdrop-filter:blur(10px) saturate(140%);
+  color:white;
+  font-size:20px;
+  cursor:pointer;
 }
 
+/* GLASS BAR */
 #glassWrap{
-position:fixed;
-left:0;right:0;
-top:-160px;
-height:140px;
-display:flex;
-justify-content:center;
-pointer-events:none;
-transition:.35s;
-z-index:5000;
+  position:fixed;
+  left:0;right:0;
+  top:-160px;
+  height:140px;
+  display:flex;
+  justify-content:center;
+  pointer-events:none;
+  transition:.35s;
+  z-index:5000;
 }
 #glassWrap.open{top:14px;pointer-events:auto}
 
 #glassBar{
-width:92%;
-max-width:1200px;
-height:84px;
-border-radius:48px;
-background:linear-gradient(
-  135deg,
-  rgba(12, 24, 74, 0.75),
-  rgba(4, 8, 24, 0.85)
-);
-border:1px solid var(--glass-border);
-display:flex;
-align-items:center;
-padding:12px 22px;
-gap:16px;
-backdrop-filter:blur(14px) saturate(160%);
-position:relative;
+  width:92%;
+  max-width:1200px;
+  height:84px;
+  border-radius:48px;
+  background:linear-gradient(
+    135deg,
+    rgba(12,24,74,.75),
+    rgba(4,8,24,.85)
+  );
+  border:1px solid var(--glass-border);
+  display:flex;
+  align-items:center;
+  padding:12px 22px;
+  gap:16px;
+  backdrop-filter:blur(14px) saturate(160%);
+  position:relative;
 }
 
 #glassBar::after{
-content:"";
-position:absolute;
-inset:0;
-border-radius:48px;
-border:2px solid transparent;
-background:
-linear-gradient(#0000,#0000) padding-box,
-linear-gradient(90deg,var(--neon1),var(--neon2),var(--neon1)) border-box;
-background-size:200% 100%;
-animation:borderFlow 6s linear infinite;
-pointer-events:none;
+  content:"";
+  position:absolute;
+  inset:0;
+  border-radius:48px;
+  border:2px solid transparent;
+  background:
+    linear-gradient(#0000,#0000) padding-box,
+    linear-gradient(90deg,var(--neon1),var(--neon2),var(--neon1)) border-box;
+  background-size:200% 100%;
+  animation:borderFlow 6s linear infinite;
+  pointer-events:none;
 }
 @keyframes borderFlow{to{background-position:200%}}
 
@@ -99,86 +103,116 @@ pointer-events:none;
 .g-right{justify-content:flex-end}
 
 .navLink{
-padding:8px 14px;
-border-radius:14px;
-background:var(--glass-bg);
-border:1px solid var(--glass-border);
-backdrop-filter:blur(10px);
-cursor:pointer;
-font-size:12px;
+  padding:8px 14px;
+  border-radius:14px;
+  background:var(--glass-bg);
+  border:1px solid var(--glass-border);
+  backdrop-filter:blur(10px);
+  cursor:pointer;
+  font-size:12px;
 }
 .navLink:hover{box-shadow:0 0 14px var(--neon2)}
 
 #menuSearch{
-width:420px;max-width:38vw;
-padding:10px 14px;
-border-radius:18px;
-background:var(--glass-bg);
-border:1px solid var(--glass-border);
-color:var(--fg);
-outline:none;
+  width:420px;
+  max-width:38vw;
+  padding:10px 14px;
+  border-radius:18px;
+  background:var(--glass-bg);
+  border:1px solid var(--glass-border);
+  color:var(--fg);
+  outline:none;
 }
 
 #menuClock,#heroClock{font-size:12px}
 #miniLogo{height:46px}
 
+/* HERO */
 .heroWrap{
-position:relative;
-z-index:2;
-padding-top:120px;
-display:flex;
-justify-content:center;
+  position:relative;
+  z-index:2;
+  padding-top:120px;
+  display:flex;
+  justify-content:center;
 }
 .hero{text-align:center}
 
+#heroClock{margin-top:-38px}
+
 #logoPanel{
-padding:34px;
-border-radius:20px;
-background:rgba(0,0,0,.75);
+  padding:34px;
+  border-radius:20px;
+  background:rgba(0,0,0,.75);
 }
 #logoPanel img{height:150px}
 
 .subtitle{margin-top:14px;font-size:12px}
 .hint{margin-top:10px;font-size:11px;opacity:.8}
 
+/* PAGES */
 main{
-position:relative;
-z-index:2;
-padding:40px 32px 80px;
+  position:relative;
+  z-index:2;
+  padding:40px 32px 80px;
 }
 .page{display:none}
 .page.active{display:block}
 
 .grid{
-display:grid;
-grid-template-columns:repeat(auto-fit,minmax(240px,1fr));
-gap:22px;
-margin-top:32px;
+  display:grid;
+  grid-template-columns:repeat(auto-fit,minmax(240px,1fr));
+  gap:22px;
+  margin-top:32px;
 }
 
 .crtBtn{
-padding:18px;
-border-radius:18px;
-background:linear-gradient(135deg,var(--neon1),var(--neon2));
-color:white;
-border:none;
-font-family:'Press Start 2P';
-cursor:pointer;
+  padding:18px;
+  border-radius:18px;
+  background:var(--glass-bg);
+  border:1px solid var(--glass-border);
+  backdrop-filter:blur(12px);
+  color:white;
+  font-family:"Press Start 2P";
+  cursor:pointer;
 }
 .crtBtn:hover{box-shadow:0 0 22px var(--neon2)}
 
-#panicFlash{
-position:fixed;
-inset:0;
-background:white;
-opacity:0;
-pointer-events:none;
-z-index:99999;
+/* GAME SHELL */
+#gameShell{
+  position:fixed;
+  inset:0;
+  background:black;
+  display:none;
+  z-index:8000;
 }
-#panicFlash.active{opacity:1}
+#gameShell.active{display:block}
 
-#heroClock{margin-top:-38px}
+#gameTop{
+  position:fixed;
+  top:14px;
+  left:14px;
+  z-index:8100;
+}
 
+#backBtn{
+  padding:10px 14px;
+  border-radius:14px;
+  background:var(--glass-bg);
+  border:1px solid var(--glass-border);
+  backdrop-filter:blur(12px) saturate(150%);
+  color:white;
+  font-family:"Press Start 2P";
+  font-size:12px;
+  cursor:pointer;
+}
+
+#gameFrame{
+  position:fixed;
+  inset:0;
+  width:100%;
+  height:100%;
+  border:none;
+}
 </style>
 </head>
 
@@ -189,148 +223,144 @@ z-index:99999;
 <button id="menuButton">☰</button>
 
 <div id="glassWrap">
-<div id="glassBar">
-<div class="g-left">
-<div class="navLink" data-nav="home">HOME</div>
-<div class="navLink" data-nav="games">GAMES</div>
-<div class="navLink" data-nav="apps">APPS</div>
-</div>
-<div class="g-center">
-<input id="menuSearch" placeholder="Search...">
-<div id="menuClock">--:--</div>
-</div>
-<div class="g-right">
-<div class="navLink" data-nav="suggest">SUGGEST</div>
-<img id="miniLogo" src="https://i.imgur.com/RIBBD4l.png">
-</div>
-</div>
+  <div id="glassBar">
+    <div class="g-left">
+      <div class="navLink" data-nav="home">HOME</div>
+      <div class="navLink" data-nav="games">GAMES</div>
+      <div class="navLink" data-nav="apps">APPS</div>
+    </div>
+    <div class="g-center">
+      <input id="menuSearch" placeholder="Search...">
+      <div id="menuClock">--:--</div>
+    </div>
+    <div class="g-right">
+      <div class="navLink" data-nav="suggest">SUGGEST</div>
+      <img id="miniLogo" src="https://i.imgur.com/RIBBD4l.png">
+    </div>
+  </div>
 </div>
 
 <header class="heroWrap">
-<div class="hero">
-<div id="heroClock">--:--</div>
-<div id="logoPanel"><img src="https://i.imgur.com/RIBBD4l.png"></div>
-<div class="subtitle">THE TUFFEST GAME SITE AROUND</div>
-<div class="hint" id="hintText"></div>
-</div>
+  <div class="hero">
+    <div id="heroClock">--:--</div>
+    <div id="logoPanel">
+      <img src="https://i.imgur.com/RIBBD4l.png">
+    </div>
+    <div class="subtitle">THE TUFFEST GAME SITE AROUND</div>
+    <div class="hint" id="hintText"></div>
+  </div>
 </header>
 
 <main>
-<section class="page active" id="home"></section>
+  <section class="page active" id="home"></section>
 
-<section class="page" id="games">
-  <div class="grid" id="gamesGrid"></div>
-</section>
+  <section class="page" id="games">
+    <div class="grid" id="gamesGrid"></div>
+  </section>
 
-<section class="page" id="apps">
-  <div class="grid" id="appsGrid"></div>
-</section>
+  <section class="page" id="apps">
+    <div class="grid" id="appsGrid"></div>
+  </section>
 
-<section class="page" id="suggest"></section>
+  <section class="page" id="suggest"></section>
 </main>
 
-<div id="panicFlash"></div>
+<div id="gameShell">
+  <div id="gameTop">
+    <button id="backBtn">← Back</button>
+  </div>
+  <iframe id="gameFrame"
+    sandbox="allow-scripts allow-same-origin allow-pointer-lock allow-popups">
+  </iframe>
+</div>
 
 <script>
 /* MENU */
-menuButton.onclick=()=>glassWrap.classList.toggle('open');
-/* PAGE NAVIGATION */
+menuButton.onclick = () => glassWrap.classList.toggle("open");
+
+/* NAVIGATION */
 const pages = document.querySelectorAll(".page");
-const navLinks = document.querySelectorAll(".navLink[data-nav]");
-
-function showPage(id){
-  pages.forEach(p => p.classList.remove("active"));
-  const page = document.getElementById(id);
-  if(page) page.classList.add("active");
-  glassWrap.classList.remove("open");
-}
-
-navLinks.forEach(link=>{
-  link.onclick = () => showPage(link.dataset.nav);
+document.querySelectorAll(".navLink[data-nav]").forEach(link=>{
+  link.onclick = () => {
+    pages.forEach(p=>p.classList.remove("active"));
+    document.getElementById(link.dataset.nav)?.classList.add("active");
+    glassWrap.classList.remove("open");
+  };
 });
 
 /* CLOCK */
 function tick(){
-const d=new Date();
-let h=d.getHours(),m=String(d.getMinutes()).padStart(2,'0');
-const am=h>=12?'PM':'AM';h=h%12||12;
-menuClock.textContent=`${h}:${m} ${am}`;
-heroClock.textContent=`${h}:${m} ${am}`;
+  const d=new Date();
+  let h=d.getHours();
+  const m=String(d.getMinutes()).padStart(2,"0");
+  const am=h>=12?"PM":"AM";
+  h=h%12||12;
+  menuClock.textContent = `${h}:${m} ${am}`;
+  heroClock.textContent = `${h}:${m} ${am}`;
 }
-setInterval(tick,1000);tick();
+setInterval(tick,1000);
+tick();
 
-/* PARTICLES (unchanged) */
-const canvas=document.getElementById("bgCanvas");
-const ctx=canvas.getContext("2d");
-let w,h,dpr;
-const particles=[];
-const COUNT=120;
-const LINK=140;
-const CURSOR=180;
+/* BACKGROUND PARTICLES */
+const canvas=bgCanvas,ctx=canvas.getContext("2d");
+let w,h;
+const particles=[],COUNT=120,LINK=140,CURSOR=180;
 const mouse={x:null,y:null};
 
 function resize(){
-dpr=window.devicePixelRatio||1;
-w=innerWidth;h=innerHeight;
-canvas.width=w*dpr;canvas.height=h*dpr;
-canvas.style.width=w+"px";canvas.style.height=h+"px";
-ctx.setTransform(dpr,0,0,dpr,0,0);
+  w=innerWidth;h=innerHeight;
+  canvas.width=w;canvas.height=h;
 }
-addEventListener("resize",resize);resize();
+addEventListener("resize",resize);
+resize();
 
 class P{
-constructor(){
-this.x=Math.random()*w;
-this.y=Math.random()*h;
-this.vx=(Math.random()-.5)*.4;
-this.vy=(Math.random()-.5)*.4;
-this.r=1.6;
+  constructor(){
+    this.x=Math.random()*w;
+    this.y=Math.random()*h;
+    this.vx=(Math.random()-.5)*.4;
+    this.vy=(Math.random()-.5)*.4;
+  }
+  update(){
+    this.x+=this.vx;this.y+=this.vy;
+    if(this.x<0||this.x>w)this.vx*=-1;
+    if(this.y<0||this.y>h)this.vy*=-1;
+    if(mouse.x){
+      const dx=mouse.x-this.x,dy=mouse.y-this.y;
+      const d=Math.hypot(dx,dy);
+      if(d<CURSOR){
+        const f=(CURSOR-d)/CURSOR;
+        this.x-=dx*f*.015;
+        this.y-=dy*f*.015;
+      }
+    }
+  }
+  draw(){
+    ctx.fillStyle="rgba(255,255,255,.8)";
+    ctx.beginPath();
+    ctx.arc(this.x,this.y,1.6,0,Math.PI*2);
+    ctx.fill();
+  }
 }
-update(){
-this.x+=this.vx;this.y+=this.vy;
-if(this.x<0||this.x>w)this.vx*=-1;
-if(this.y<0||this.y>h)this.vy*=-1;
-if(mouse.x!==null){
-const dx=mouse.x-this.x,dy=mouse.y-this.y;
-const d=Math.hypot(dx,dy);
-if(d<CURSOR){
-const f=(CURSOR-d)/CURSOR;
-this.x-=dx*f*.015;
-this.y-=dy*f*.015;
-}
-}
-}
-draw(){
-ctx.beginPath();
-ctx.arc(this.x,this.y,this.r,0,Math.PI*2);
-ctx.fillStyle="rgba(255,255,255,.85)";
-ctx.fill();
-}
-}
-
 for(let i=0;i<COUNT;i++)particles.push(new P());
 
-function links(){
-for(let i=0;i<particles.length;i++)
-for(let j=i+1;j<particles.length;j++){
-const a=particles[i],b=particles[j];
-const d=Math.hypot(a.x-b.x,a.y-b.y);
-if(d<LINK){
-ctx.strokeStyle=`rgba(255,255,255,${(1-d/LINK)*.25})`;
-ctx.beginPath();
-ctx.moveTo(a.x,a.y);
-ctx.lineTo(b.x,b.y);
-ctx.stroke();
-}
-}
-}
-
 function loop(){
-ctx.clearRect(0,0,w,h);
-particles.forEach(p=>p.update());
-links();
-particles.forEach(p=>p.draw());
-requestAnimationFrame(loop);
+  ctx.clearRect(0,0,w,h);
+  for(let i=0;i<particles.length;i++){
+    for(let j=i+1;j<particles.length;j++){
+      const a=particles[i],b=particles[j];
+      const d=Math.hypot(a.x-b.x,a.y-b.y);
+      if(d<LINK){
+        ctx.strokeStyle=`rgba(255,255,255,${(1-d/LINK)*.25})`;
+        ctx.beginPath();
+        ctx.moveTo(a.x,a.y);
+        ctx.lineTo(b.x,b.y);
+        ctx.stroke();
+      }
+    }
+  }
+  particles.forEach(p=>{p.update();p.draw();});
+  requestAnimationFrame(loop);
 }
 loop();
 
@@ -338,77 +368,25 @@ addEventListener("mousemove",e=>{mouse.x=e.clientX;mouse.y=e.clientY});
 addEventListener("mouseleave",()=>mouse.x=null);
 
 /* GAMES */
-function launchGame(src){
-  const returnURL = location.href;
+const games=[
+  {name:"Eaglercraft",url:"games/eaglercraft/index.html"},
+  {name:"Retro Bowl",url:"games/retro-bowl/index.html"},
+  {name:"Idle Dice",url:"games/idle-dice/index.html"}
+];
 
-  document.open();
-  document.write(`
-<!doctype html>
-<html>
-<head>
-  <title>about:blank</title>
-  <style>
-    html,body{
-      margin:0;
-      width:100%;
-      height:100%;
-      background:black;
-      overflow:hidden;
-      font-family: system-ui, sans-serif;
-    }
-    iframe{
-      position:fixed;
-      inset:0;
-      width:100%;
-      height:100%;
-      border:none;
-    }
-    #backBtn{
-      position:fixed;
-      top:14px;
-      left:14px;
-      z-index:9999;
-      padding:10px 14px;
-      border-radius:14px;
-      background:rgba(255,255,255,.08);
-      border:1px solid rgba(255,255,255,.18);
-      backdrop-filter:blur(12px) saturate(150%);
-      color:white;
-      font-family:'Press Start 2P';
-      font-size:12px;
-      cursor:pointer;
-      display:flex;
-      align-items:center;
-      gap:6px;
-    }
-    #backBtn:hover{
-      box-shadow:0 0 16px rgba(0,224,198,.6);
-    }
-  </style>
-</head>
-<body>
+games.forEach(g=>{
+  const b=document.createElement("button");
+  b.className="crtBtn";
+  b.textContent=g.name;
+  b.onclick=()=>{gameFrame.src=g.url;gameShell.classList.add("active");};
+  gamesGrid.appendChild(b);
+});
 
-<button id="backBtn">← Back</button>
-
-<iframe src="${src}"
-  sandbox="allow-scripts allow-same-origin allow-pointer-lock allow-popups">
-</iframe>
-
-<script>
-  document.getElementById("backBtn").onclick = () => {
-    location.href = "${returnURL}";
-  };
-
-  // Panic key (~ or \`)
-  document.addEventListener("keydown", e => {
-    if (e.key === "\`" || e.key === "~") {
-      location.replace("https://classroom.google.com");
-    }
-  });
-<\/script>
+backBtn.onclick=()=>{
+  gameFrame.src="";
+  gameShell.classList.remove("active");
+};
+</script>
 
 </body>
 </html>
-  `);
-  document.close();
-}
