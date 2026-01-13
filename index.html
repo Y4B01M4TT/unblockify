@@ -180,41 +180,6 @@ z-index:99999;
 
 #heroClock{margin-top:-38px}
 
-/* GAME SHELL */
-#gameShell{
-position:fixed;
-inset:0;
-background:black;
-display:none;
-z-index:8000;
-}
-#gameShell.active{display:block}
-
-#gameTop{
-position:fixed;
-top:14px;left:14px;
-display:flex;
-gap:10px;
-z-index:8100;
-}
-#gameTop button{
-background:var(--glass-bg);
-border:1px solid var(--glass-border);
-backdrop-filter:blur(10px);
-color:white;
-padding:10px;
-border-radius:12px;
-font-family:'Press Start 2P';
-cursor:pointer;
-}
-
-#gameFrame{
-position:fixed;
-inset:0;
-width:100%;
-height:100%;
-border:none;
-}
 </style>
 </head>
 
@@ -264,14 +229,6 @@ border:none;
 
 <section class="page" id="suggest"></section>
 </main>
-
-<div id="gameShell">
-<div id="gameTop">
-<button id="backBtn">← Back</button>
-</div>
-<iframe id="gameFrame"
-sandbox="allow-scripts allow-same-origin allow-pointer-lock allow-popups"></iframe>
-</div>
 
 <div id="panicFlash"></div>
 
@@ -383,59 +340,76 @@ addEventListener("mouseleave",()=>mouse.x=null);
 
 /* GAMES */
 function launchGame(src){
-gameFrame.src=src;
-gameShell.classList.add("active");
+  const returnURL = location.href;
+
   document.open();
   document.write(`
-    <!doctype html>
-    <html>
-      <head>
-        <title>about:blank</title>
-        <style>
-          html,body{
-            margin:0;
-            width:100%;
-            height:100%;
-            background:black;
-            overflow:hidden;
-          }
-          iframe{
-            position:fixed;
-            inset:0;
-            width:100%;
-            height:100%;
-            border:none;
-          }
-        </style>
-      </head>
-      <body>
-        <iframe src="${src}"
-          sandbox="allow-scripts allow-same-origin allow-pointer-lock allow-popups">
-        </iframe>
-      </body>
-    </html>
+<!doctype html>
+<html>
+<head>
+  <title>about:blank</title>
+  <style>
+    html,body{
+      margin:0;
+      width:100%;
+      height:100%;
+      background:black;
+      overflow:hidden;
+      font-family: system-ui, sans-serif;
+    }
+    iframe{
+      position:fixed;
+      inset:0;
+      width:100%;
+      height:100%;
+      border:none;
+    }
+    #backBtn{
+      position:fixed;
+      top:14px;
+      left:14px;
+      z-index:9999;
+      padding:10px 14px;
+      border-radius:14px;
+      background:rgba(255,255,255,.08);
+      border:1px solid rgba(255,255,255,.18);
+      backdrop-filter:blur(12px) saturate(150%);
+      color:white;
+      font-family:'Press Start 2P';
+      font-size:12px;
+      cursor:pointer;
+      display:flex;
+      align-items:center;
+      gap:6px;
+    }
+    #backBtn:hover{
+      box-shadow:0 0 16px rgba(0,224,198,.6);
+    }
+  </style>
+</head>
+<body>
+
+<button id="backBtn">← Back</button>
+
+<iframe src="${src}"
+  sandbox="allow-scripts allow-same-origin allow-pointer-lock allow-popups">
+</iframe>
+
+<script>
+  document.getElementById("backBtn").onclick = () => {
+    location.href = "${returnURL}";
+  };
+
+  // Panic key (~ or \`)
+  document.addEventListener("keydown", e => {
+    if (e.key === "\`" || e.key === "~") {
+      location.replace("https://classroom.google.com");
+    }
+  });
+<\/script>
+
+</body>
+</html>
   `);
   document.close();
 }
-
-const games=[
-{name:"Eaglercraft",url:"games/eaglercraft/index.html"},
-{name:"Retro Bowl",url:"games/retro-bowl/index.html"},
-{name:"Idle Dice",url:"games/idle-dice/index.html"}
-];
-
-games.forEach(g=>{
-const b=document.createElement("button");
-b.className="crtBtn";
-b.textContent=g.name;
-b.onclick=()=>launchGame(g.url);
-gamesGrid.appendChild(b);
-});
-
-backBtn.onclick=()=>{
-gameFrame.src="";
-gameShell.classList.remove("active");
-};
-</script>
-
-</body>
