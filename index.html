@@ -377,7 +377,7 @@ const games=[
 
 /* APPS */
 const apps = [
-  { name:"Dogeub", url:"/unblockify/apps/dogeub/" }
+  { name:"Dogeub", url:"apps/dogeub/index.html" }
 ];
 
 /* GAME BUTTON SCRIPT */
@@ -394,7 +394,10 @@ apps.forEach(a=>{
   const b=document.createElement("button");
   b.className="crtBtn";
   b.textContent=a.name;
-  b.onclick=()=>launchGame(a.url);
+  b.onclick=()=>{
+    gameFrame.src = a.url;
+    gameShell.classList.add("active");
+  };
   appsGrid.appendChild(b);
 });
 
