@@ -369,17 +369,33 @@ addEventListener("mouseleave",()=>mouse.x=null);
 
 /* GAMES */
 const games=[
+  {name:"Deepest Sword",url:"games/deepest-sword/index.html"},
   {name:"Eaglercraft",url:"games/eaglercraft/index.html"},
-  {name:"Retro Bowl",url:"games/retro-bowl/index.html"},
-  {name:"Idle Dice",url:"games/idle-dice/index.html"}
+  {name:"Idle Dice",url:"games/idle-dice/index.html"},
+  {name:"Retro Bowl",url:"games/retro-bowl/index.html"}
 ];
 
+/* APPS */
+const apps = [
+  { name:"Dogeub", url:"/unblockify/apps/dogeub/" }
+];
+
+/* GAME BUTTON SCRIPT */
 games.forEach(g=>{
   const b=document.createElement("button");
   b.className="crtBtn";
   b.textContent=g.name;
   b.onclick=()=>{gameFrame.src=g.url;gameShell.classList.add("active");};
   gamesGrid.appendChild(b);
+});
+
+/* APP BUTTON SCRIPT */
+apps.forEach(a=>{
+  const b=document.createElement("button");
+  b.className="crtBtn";
+  b.textContent=a.name;
+  b.onclick=()=>launchGame(a.url);
+  appsGrid.appendChild(b);
 });
 
 backBtn.onclick=()=>{
