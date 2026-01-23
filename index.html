@@ -216,6 +216,89 @@ main{
   height:100%;
   border:none;
 }
+
+/* Overlay base */
+.overlay{
+  position:fixed;
+  inset:0;
+  background:rgba(0,0,0,0.35);
+  backdrop-filter:blur(12px);
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  z-index:9999;
+}
+
+/* Hidden state */
+.hidden{
+  display:none;
+}
+
+/* Panel */
+.settingsPanel{
+  width:90%;
+  max-width:420px;
+  background:rgba(255,255,255,0.08);
+  border:1px solid var(--glass-border);
+  border-radius:24px;
+  padding:28px 24px 22px;
+  position:relative;
+  backdrop-filter:blur(18px) saturate(160%);
+  box-shadow:0 0 30px rgba(0,0,0,0.35);
+}
+
+/* Title */
+.settingsTitle{
+  margin:0 0 20px;
+  text-align:center;
+  font-family:var(--main-font);
+  font-size:1.6rem;
+}
+
+/* Close button */
+.closeBtn{
+  position:absolute;
+  top:14px;
+  right:16px;
+  background:none;
+  border:none;
+  color:white;
+  font-size:1.4rem;
+  cursor:pointer;
+}
+
+/* Button list */
+.settingsList{
+  display:flex;
+  flex-direction:column;
+  gap:14px;
+}
+
+/* Individual buttons */
+.settingsItem{
+  padding:14px;
+  border-radius:16px;
+  background:rgba(255,255,255,0.12);
+  border:1px solid var(--glass-border);
+  color:white;
+  font-family:var(--main-font);
+  font-size:1rem;
+  cursor:pointer;
+  transition:background 0.2s;
+}
+
+.settingsItem:hover{
+  background:rgba(255,255,255,0.2);
+}
+
+/* Footer */
+.settingsFooter{
+  margin-top:28px;
+  text-align:center;
+  opacity:0.75;
+  font-family:var(--main-font);
+  font-size:0.9rem;
+}
 </style>
 </head>
 
@@ -237,7 +320,7 @@ main{
       <div id="menuClock">--:--</div>
     </div>
     <div class="g-right">
-      <div class="navLink" data-nav="settings">SETTINGS</div>
+      <div class="navLink" id="settingsBtn">SETTINGS</div>
       <img id="miniLogo" src="https://i.imgur.com/RIBBD4l.png">
     </div>
   </div>
@@ -264,8 +347,6 @@ main{
   <section class="page" id="apps">
     <div class="grid" id="appsGrid"></div>
   </section>
-
-  <section class="page" id="settings"></section>
 </main>
 
 <div id="gameShell">
@@ -281,9 +362,28 @@ main{
 /* MENU */
 menuButton.onclick = () => glassWrap.classList.toggle("open");
 
+const settingsBtn = document.getElementById("settingsBtn");
+const settingsOverlay = document.getElementById("settingsOverlay");
+const closeSettings = document.getElementById("closeSettings");
+
+settingsBtn.addEventListener("click", () => {
+  settingsOverlay.classList.remove("hidden");
+});
+
+closeSettings.addEventListener("click", () => {
+  settingsOverlay.classList.add("hidden");
+});
+
+/* Optional: click outside panel to close */
+settingsOverlay.addEventListener("click", (e) => {
+  if(e.target === settingsOverlay){
+    settingsOverlay.classList.add("hidden");
+  }
+});
+
 /* NAVIGATION */
 const pages = document.querySelectorAll(".page");
-document.querySelectorAll(".navLink[data-nav]").forEach(link=>{
+document.querySelectorAll(".navLink[data-nav]:not([data-nav='settings'])").forEach(link=>{
   link.onclick = () => {
     pages.forEach(p=>p.classList.remove("active"));
     document.getElementById(link.dataset.nav)?.classList.add("active");
@@ -412,6 +512,25 @@ backBtn.onclick=()=>{
   gameShell.classList.remove("active");
 };
 </script>
+
+<!-- Settings Overlay -->
+<div id="settingsOverlay" class="overlay hidden">
+  <div class="settingsPanel">
+    <button class="closeBtn" id="closeSettings">✕</button>
+
+    <h2 class="settingsTitle">Settings</h2>
+
+    <div class="settingsList" id="settingsList">
+      <!-- Buttons go here -->
+      <button class="settingsItem">Account</button>
+      <button class="settingsItem">Suggestions</button>
+    </div>
+
+    <div class="settingsFooter">
+      thanks, from M ✌️
+    </div>
+  </div>
+</div>
 
 </body>
 </html>
