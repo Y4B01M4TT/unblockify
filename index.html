@@ -358,6 +358,25 @@ main{
   </iframe>
 </div>
 
+<!-- Settings Overlay -->
+<div id="settingsOverlay" class="overlay hidden">
+  <div class="settingsPanel">
+    <button class="closeBtn" id="closeSettings">✕</button>
+
+    <h2 class="settingsTitle">Settings</h2>
+
+    <div class="settingsList" id="settingsList">
+      <!-- Buttons go here -->
+      <button class="settingsItem">Account</button>
+      <button class="settingsItem">Suggestions</button>
+    </div>
+
+    <div class="settingsFooter">
+      thanks, from M ✌️
+    </div>
+  </div>
+</div>
+  
 <script>
 /* MENU */
 menuButton.onclick = () => glassWrap.classList.toggle("open");
@@ -512,25 +531,6 @@ backBtn.onclick=()=>{
   gameShell.classList.remove("active");
 };
 </script>
-
-<!-- Settings Overlay -->
-<div id="settingsOverlay" class="overlay hidden">
-  <div class="settingsPanel">
-    <button class="closeBtn" id="closeSettings">✕</button>
-
-    <h2 class="settingsTitle">Settings</h2>
-
-    <div class="settingsList" id="settingsList">
-      <!-- Buttons go here -->
-      <button class="settingsItem">Account</button>
-      <button class="settingsItem">Suggestions</button>
-    </div>
-
-    <div class="settingsFooter">
-      thanks, from M ✌️
-    </div>
-  </div>
-</div>
 
 </body>
 </html>
