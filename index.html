@@ -65,13 +65,9 @@ html,body{
 #glassBar{
   width:92%;
   max-width:1200px;
-  height:84px;
-  border-radius:48px;
-  background:linear-gradient(
-    135deg,
-    rgba(12,24,74,.75),
-    rgba(4,8,24,.85)
-  );
+  height:76px;
+  border-radius:56px;
+  background: rgba(255,255,255,0.08);
   border:1px solid var(--glass-border);
   display:flex;
   align-items:center;
@@ -84,17 +80,24 @@ html,body{
 #glassBar::after{
   content:"";
   position:absolute;
-  inset:0;
-  border-radius:48px;
-  border:2px solid transparent;
+  inset:-2px;
+  border-radius:52px;
+  pointer-events:none;
+
   background:
     linear-gradient(#0000,#0000) padding-box,
-    linear-gradient(90deg,var(--neon1),var(--neon2),var(--neon1)) border-box;
-  background-size:200% 100%;
-  animation:borderFlow 6s linear infinite;
-  pointer-events:none;
+    linear-gradient(
+      90deg,
+      rgba(0,120,255,.9),
+      rgba(0,224,198,.9),
+      rgba(0,120,255,.9)
+    ) border-box;
+
+  border:2px solid transparent;
+  filter: drop-shadow(0 0 14px rgba(0,160,255,.6));
+  background-size:300% 100%;
+  animation:borderFlow 7s linear infinite;
 }
-@keyframes borderFlow{to{background-position:200%}}
 
 #glassBar>*{position:relative;z-index:1}
 
@@ -234,7 +237,7 @@ main{
       <div id="menuClock">--:--</div>
     </div>
     <div class="g-right">
-      <div class="navLink" data-nav="suggest">SUGGEST</div>
+      <div class="navLink" data-nav="settings">SETTINGS</div>
       <img id="miniLogo" src="https://i.imgur.com/RIBBD4l.png">
     </div>
   </div>
@@ -262,7 +265,7 @@ main{
     <div class="grid" id="appsGrid"></div>
   </section>
 
-  <section class="page" id="suggest"></section>
+  <section class="page" id="settings"></section>
 </main>
 
 <div id="gameShell">
