@@ -550,7 +550,9 @@ games.forEach(g=>{
   const b=document.createElement("button");
   b.className="crtBtn";
   b.textContent=g.name;
-  b.onclick = () => launchInBlank(g.url);
+  b.onclick = () => {
+  window.location.href = g.url;
+};
   gamesGrid.appendChild(b);
 });
 
