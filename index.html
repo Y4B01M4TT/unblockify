@@ -9,6 +9,7 @@
 
 <style>
 :root{
+  --main-font:"Press Start 2P", system-ui, monospace;
   --bg:#000;
   --fg:#e6f7ff;
   --glass-bg:rgba(255,255,255,.06);
@@ -489,38 +490,10 @@ loop();
 addEventListener("mousemove",e=>{mouse.x=e.clientX;mouse.y=e.clientY});
 addEventListener("mouseleave",()=>mouse.x=null);
 
-function launchInBlank(url){
-  const win = window.open("about:blank", "_self");
-  win.document.write(`
-    <!doctype html>
-    <html>
-    <head>
-      <title>Loading...</title>
-      <meta name="viewport" content="width=device-width,initial-scale=1">
-      <style>
-        html,body{
-          margin:0;
-          height:100%;
-          background:black;
-        }
-        iframe{
-          position:fixed;
-          inset:0;
-          width:100%;
-          height:100%;
-          border:none;
-        }
-      </style>
-    </head>
-    <body>
-      <iframe src="${url}"
-        allow="fullscreen; gamepad; autoplay"
-        sandbox="allow-scripts allow-same-origin allow-pointer-lock allow-popups">
-      </iframe>
-    </body>
-    </html>
-  `);
-  win.document.close();
+function launchGameLocal(url) {
+  // Show the game shell
+  gameFrame.src = url;
+  gameShell.classList.add("active");
 }
   
 /* GAMES */
@@ -550,9 +523,7 @@ games.forEach(g=>{
   const b=document.createElement("button");
   b.className="crtBtn";
   b.textContent=g.name;
-  b.onclick = () => {
-  window.location.href = g.url;
-};
+  b.onclick = () => launchGameLocal(g.url);
   gamesGrid.appendChild(b);
 });
 
@@ -561,7 +532,7 @@ apps.forEach(a=>{
   const b=document.createElement("button");
   b.className="crtBtn";
   b.textContent=a.name;
-  b.onclick = () => launchInBlank(a.url);
+  b.onclick = () => launchGameLocal(a.url);
   appsGrid.appendChild(b);
 });
 
