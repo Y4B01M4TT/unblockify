@@ -300,6 +300,71 @@ main{
   font-family:var(--main-font);
   font-size:0.9rem;
 }
+
+.ai-shell {
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+  backdrop-filter: blur(14px);
+  background: var(--glass-bg);
+  border: 1px solid var(--glass-border);
+  border-radius: 18px;
+  padding: 14px;
+}
+
+.chatbox {
+  flex: 1;
+  overflow-y: auto;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.chat-message {
+  max-width: 80%;
+  padding: 10px 14px;
+  border-radius: 14px;
+  font-size: 14px;
+}
+
+.user-message {
+  align-self: flex-end;
+  background: linear-gradient(135deg, #5b7cff, #8fa7ff);
+  color: white;
+}
+
+.assistant-message {
+  align-self: flex-start;
+  background: rgba(255,255,255,0.08);
+  color: #dbe4ff;
+}
+
+.input-area {
+  display: flex;
+  gap: 8px;
+  margin-top: 10px;
+}
+
+.input-area input {
+  flex: 1;
+  background: rgba(255,255,255,0.08);
+  border: 1px solid var(--glass-border);
+  color: white;
+  border-radius: 999px;
+  padding: 8px 12px;
+}
+
+.input-area button {
+  border-radius: 999px;
+}
+
+.ai-footer {
+  text-align: center;
+  font-family: var(--site-font);
+  font-size: 12px;
+  opacity: 0.6;
+  margin-top: 8px;
+}
 </style>
 </head>
 
