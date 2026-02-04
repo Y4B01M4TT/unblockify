@@ -1,0 +1,75 @@
+<!-- Unblockify AI App -->
+
+<div class="ai-shell">
+  <div id="chatbox" class="chatbox"></div>
+
+  <div class="input-area">
+    <input id="chatInput" type="text" placeholder="Ask Unblockify AI…" />
+    <button id="sendButton">
+      <span class="material-icons">send</span>
+    </button>
+  </div>
+
+  <div class="ai-footer">thanks, from M ✌️</div>
+</div>
+
+<script>
+  const sendButton = document.getElementById("sendButton");
+  const chatInput = document.getElementById("chatInput");
+  const chatbox = document.getElementById("chatbox");
+
+  let conversation = [];
+
+  function displayMessage(message, isUser) {
+    const msg = document.createElement("div");
+    msg.className = "chat-message " + (isUser ? "user-message" : "assistant-message");
+    msg.textContent = message;
+    chatbox.appendChild(msg);
+    chatbox.scrollTop = chatbox.scrollHeight;
+  }
+
+  async function sendMessage() {
+    const message = chatInput.value.trim();
+    if (!message) return;
+
+    displayMessage(message, true);
+    chatInput.value = "";
+
+    conversation.push({ role: "user", content: message });
+
+    const systemPrompt = `
+You are Unblockify AI, known as U-Know AI.
+You help with games, site features, and general questions.
+Keep responses concise and friendly.
+`;
+
+    const prompt = systemPrompt + "\n" +
+      conversation.map(m => m.content).join("\n");
+
+    try {
+      const res = await fetch(
+        "https://backend.buildpicoapps.com/aero/run/llm-api?pk=YOUR_KEY_HERE",
+        {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ prompt })
+        }
+      );
+
+      const data = await res.json();
+      if (data.status === "success") {
+        displayMessage(data.text, false);
+        conversation.push({ role: "assistant", content: data.text });
+      } else {
+        displayMessage("Something went wrong.", false);
+      }
+    } catch {
+      displayMessage("Connection error.", false);
+    }
+  }
+
+  sendButton.onclick = sendMessage;
+  chatInput.addEventListener("keydown", e => {
+    if (e.key === "Enter") sendMessage();
+  });
+</script>
