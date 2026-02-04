@@ -301,6 +301,22 @@ main{
   font-size:0.9rem;
 }
 
+/* APP SHELL */
+#appShell{
+  position:fixed;
+  inset:0;
+  z-index:7000;
+  padding:120px 32px 80px;
+}
+
+#appShell.hidden{
+  display:none;
+}
+
+#appShell.active{
+  display:block;
+}
+
 .ai-shell {
   display: flex;
   flex-direction: column;
@@ -360,7 +376,7 @@ main{
 
 .ai-footer {
   text-align: center;
-  font-family: var(--site-font);
+  font-family: var(--main-font);
   font-size: 12px;
   opacity: 0.6;
   margin-top: 8px;
@@ -414,6 +430,8 @@ main{
     <div class="grid" id="appsGrid"></div>
   </section>
 </main>
+
+<div id="appShell" class="hidden"></div>
 
 <div id="gameShell">
   <div id="gameTop">
@@ -555,10 +573,26 @@ loop();
 addEventListener("mousemove",e=>{mouse.x=e.clientX;mouse.y=e.clientY});
 addEventListener("mouseleave",()=>mouse.x=null);
 
-function launchGameLocal(url) {
-  // Show the game shell
+async function launchGameLocal(url) {
+  // close apps
+  appShell.innerHTML = "";
+  appShell.classList.add("hidden");
+
   gameFrame.src = url;
   gameShell.classList.add("active");
+}
+
+async function launchAppLocal(url) {
+  // close game shell
+  gameFrame.src = "";
+  gameShell.classList.remove("active");
+
+  const res = await fetch(url);
+  const html = await res.text();
+
+  appShell.innerHTML = html;
+  appShell.classList.remove("hidden");
+  appShell.classList.add("active");
 }
   
 /* GAMES */
@@ -617,13 +651,16 @@ apps.forEach(a=>{
   const b=document.createElement("button");
   b.className="crtBtn";
   b.textContent=a.name;
-  b.onclick = () => launchGameLocal(a.url);
+  b.onclick = () => launchAppLocal(a.url);
   appsGrid.appendChild(b);
 });
 
-backBtn.onclick=()=>{
-  gameFrame.src="";
+backBtn.onclick = () => {
+  gameFrame.src = "";
   gameShell.classList.remove("active");
+
+  appShell.innerHTML = "";
+  appShell.classList.add("hidden");
 };
 </script>
 
