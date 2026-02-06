@@ -15,42 +15,41 @@
 
 
 <script>
-(() => {
-  const shell = document.querySelector(".ai-shell");
-  if (!shell) return;
-
-  const chatbox = shell.querySelector(".ai-chatbox");
-  const input = shell.querySelector(".ai-input");
-  const sendBtn = shell.querySelector(".ai-send");
-  const backBtn = shell.querySelector(".ai-back");
+function initUnblockifyAI() {
+  const sendButton = document.getElementById("sendButton");
+  const chatInput = document.getElementById("chatInput");
+  const chatbox = document.getElementById("chatbox");
 
   let conversation = [];
 
-  function displayMessage(text, isUser) {
+  function displayMessage(message, isUser) {
     const msg = document.createElement("div");
-    msg.className =
-      "chat-message " + (isUser ? "user-message" : "assistant-message");
-    msg.textContent = text;
+    msg.className = "chat-message " + (isUser ? "user-message" : "assistant-message");
+    msg.textContent = message;
     chatbox.appendChild(msg);
     chatbox.scrollTop = chatbox.scrollHeight;
   }
 
   async function sendMessage() {
-    const message = input.value.trim();
+    const message = chatInput.value.trim();
     if (!message) return;
 
     displayMessage(message, true);
-    input.value = "";
+    chatInput.value = "";
 
     conversation.push({ role: "user", content: message });
 
-    const prompt =
-`You are Unblockify AI (U-Know AI).
-You help with games, site features, and general questions.
-Be concise, friendly, and helpful.
+    const systemPrompt = `
+You are Unblockify AI (U-Know AI).
+You live inside the Unblockify website.
+You help users with games, apps, and features.
+Answer clearly, casually, and concisely.
+Never mention external platforms.
+`;
 
-Conversation:
-${conversation.map(m => m.content).join("\n")}`;
+    const prompt =
+      systemPrompt + "\n" +
+      conversation.map(m => m.content).join("\n");
 
     try {
       const res = await fetch(
@@ -74,14 +73,9 @@ ${conversation.map(m => m.content).join("\n")}`;
     }
   }
 
-  sendBtn.onclick = sendMessage;
-  input.addEventListener("keydown", e => {
+  sendButton.onclick = sendMessage;
+  chatInput.addEventListener("keydown", e => {
     if (e.key === "Enter") sendMessage();
   });
-
-  backBtn.onclick = () => {
-    shell.remove();
-  };
-})();
+}
 </script>
-
