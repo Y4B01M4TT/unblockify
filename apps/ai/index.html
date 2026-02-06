@@ -1,50 +1,56 @@
 <!-- Unblockify AI App -->
 
 <div class="ai-shell">
-  <div id="chatbox" class="chatbox"></div>
+  <button class="crtBtn ai-back">← Back</button>
+
+  <div class="ai-chatbox"></div>
 
   <div class="input-area">
-    <input id="chatInput" type="text" placeholder="Ask Unblockify AI…" />
-    <button id="sendButton">
-      <span class="material-icons">send</span>
-    </button>
+    <input class="ai-input" type="text" placeholder="Ask Unblockify AI…" />
+    <button class="ai-send">Send</button>
   </div>
 
   <div class="ai-footer">thanks, from M ✌️</div>
 </div>
 
+
 <script>
-  const sendButton = document.getElementById("sendButton");
-  const chatInput = document.getElementById("chatInput");
-  const chatbox = document.getElementById("chatbox");
+(() => {
+  const shell = document.querySelector(".ai-shell");
+  if (!shell) return;
+
+  const chatbox = shell.querySelector(".ai-chatbox");
+  const input = shell.querySelector(".ai-input");
+  const sendBtn = shell.querySelector(".ai-send");
+  const backBtn = shell.querySelector(".ai-back");
 
   let conversation = [];
 
-  function displayMessage(message, isUser) {
+  function displayMessage(text, isUser) {
     const msg = document.createElement("div");
-    msg.className = "chat-message " + (isUser ? "user-message" : "assistant-message");
-    msg.textContent = message;
+    msg.className =
+      "chat-message " + (isUser ? "user-message" : "assistant-message");
+    msg.textContent = text;
     chatbox.appendChild(msg);
     chatbox.scrollTop = chatbox.scrollHeight;
   }
 
   async function sendMessage() {
-    const message = chatInput.value.trim();
+    const message = input.value.trim();
     if (!message) return;
 
     displayMessage(message, true);
-    chatInput.value = "";
+    input.value = "";
 
     conversation.push({ role: "user", content: message });
 
-    const systemPrompt = `
-You are Unblockify AI, known as U-Know AI.
+    const prompt =
+`You are Unblockify AI (U-Know AI).
 You help with games, site features, and general questions.
-Keep responses concise and friendly.
-`;
+Be concise, friendly, and helpful.
 
-    const prompt = systemPrompt + "\n" +
-      conversation.map(m => m.content).join("\n");
+Conversation:
+${conversation.map(m => m.content).join("\n")}`;
 
     try {
       const res = await fetch(
@@ -68,8 +74,14 @@ Keep responses concise and friendly.
     }
   }
 
-  sendButton.onclick = sendMessage;
-  chatInput.addEventListener("keydown", e => {
+  sendBtn.onclick = sendMessage;
+  input.addEventListener("keydown", e => {
     if (e.key === "Enter") sendMessage();
   });
+
+  backBtn.onclick = () => {
+    shell.remove();
+  };
+})();
 </script>
+
