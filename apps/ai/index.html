@@ -3,23 +3,26 @@
 <div class="ai-shell">
   <button class="crtBtn ai-back">← Back</button>
 
-  <div class="ai-chatbox"></div>
+  <div id="chatbox" class="chatbox"></div>
 
   <div class="input-area">
-    <input class="ai-input" type="text" placeholder="Ask Unblockify AI…" />
-    <button class="ai-send">Send</button>
+    <input id="chatInput" type="text" placeholder="Ask Unblockify AI…" />
+    <button id="sendButton">Send</button>
   </div>
 
   <div class="ai-footer">thanks, from M ✌️</div>
 </div>
-
 
 <script>
 function initUnblockifyAI() {
   const sendButton = document.getElementById("sendButton");
   const chatInput = document.getElementById("chatInput");
   const chatbox = document.getElementById("chatbox");
-  displayMessage("Hey! I’m U-Know AI. What do you need assistance with today?", false);
+
+  if (!sendButton || !chatInput || !chatbox) {
+    console.error("AI elements not found");
+    return;
+  }
 
   let conversation = [];
 
@@ -31,6 +34,11 @@ function initUnblockifyAI() {
     chatbox.scrollTop = chatbox.scrollHeight;
   }
 
+  displayMessage(
+    "Hey! I’m U-Know AI. What do you need assistance with today?",
+    false
+  );
+
   async function sendMessage() {
     const message = chatInput.value.trim();
     if (!message) return;
@@ -41,19 +49,13 @@ function initUnblockifyAI() {
     conversation.push({ role: "user", content: message });
 
     const systemPrompt = `
-You are Unblockify AI, also called U-Know AI.
-You are part of the Unblockify website, not a generic chatbot.
-You help with:
-- Games on the site
-- App features
-- Navigation help
-- Suggestions
-
-Rules:
-- Keep answers short but useful
-- No emojis
-- No mentioning external companies or APIs
-- Speak casually, like a helpful dev friend
+You are Unblockify AI (U-Know AI).
+You help users navigate the Unblockify site.
+Answer any general questions using valid sources.
+Short, clear answers only.
+Go in detail if asked.
+No emojis.
+Speak casually.
 `;
 
     const prompt =
@@ -71,6 +73,7 @@ Rules:
       );
 
       const data = await res.json();
+
       if (data.status === "success") {
         displayMessage(data.text, false);
         conversation.push({ role: "assistant", content: data.text });
