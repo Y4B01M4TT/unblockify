@@ -19,6 +19,7 @@ function initUnblockifyAI() {
   const sendButton = document.getElementById("sendButton");
   const chatInput = document.getElementById("chatInput");
   const chatbox = document.getElementById("chatbox");
+  displayMessage("Hey! I’m U-Know AI. What do you need assistance with today?", false);
 
   let conversation = [];
 
@@ -40,11 +41,19 @@ function initUnblockifyAI() {
     conversation.push({ role: "user", content: message });
 
     const systemPrompt = `
-You are Unblockify AI (U-Know AI).
-You live inside the Unblockify website.
-You help users with games, apps, and features.
-Answer clearly, casually, and concisely.
-Never mention external platforms.
+You are Unblockify AI, also called U-Know AI.
+You are part of the Unblockify website, not a generic chatbot.
+You help with:
+- Games on the site
+- App features
+- Navigation help
+- Suggestions
+
+Rules:
+- Keep answers short but useful
+- No emojis
+- No mentioning external companies or APIs
+- Speak casually, like a helpful dev friend
 `;
 
     const prompt =
