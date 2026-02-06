@@ -14,12 +14,13 @@
 </div>
 
 <script>
-function initUnblockifyAI() {
+window.initUnblockifyAI = function () {
   const sendButton = document.getElementById("sendButton");
   const chatInput = document.getElementById("chatInput");
   const chatbox = document.getElementById("chatbox");
+  const backBtn = document.querySelector(".ai-back");
 
-  if (!sendButton || !chatInput || !chatbox) {
+  if (!sendButton || !chatInput || !chatbox || !backBtn) {
     console.error("AI elements not found");
     return;
   }
@@ -28,7 +29,8 @@ function initUnblockifyAI() {
 
   function displayMessage(message, isUser) {
     const msg = document.createElement("div");
-    msg.className = "chat-message " + (isUser ? "user-message" : "assistant-message");
+    msg.className =
+      "chat-message " + (isUser ? "user-message" : "assistant-message");
     msg.textContent = message;
     chatbox.appendChild(msg);
     chatbox.scrollTop = chatbox.scrollHeight;
@@ -50,12 +52,12 @@ function initUnblockifyAI() {
 
     const systemPrompt = `
 You are Unblockify AI (U-Know AI).
-You help users navigate the Unblockify site.
-Answer any general questions using valid sources.
-Short, clear answers only.
-Go in detail if asked.
-No emojis.
+You help users with any general questions.
+Short, clear answers.
 Speak casually.
+Explain in detail.
+Use credible sources.
+Also assist users in using the Unblockify website.
 `;
 
     const prompt =
@@ -78,7 +80,7 @@ Speak casually.
         displayMessage(data.text, false);
         conversation.push({ role: "assistant", content: data.text });
       } else {
-        displayMessage("Something went wrong.", false);
+        displayMessage("Whoops! Something went wrong.", false);
       }
     } catch {
       displayMessage("Connection error.", false);
@@ -89,5 +91,11 @@ Speak casually.
   chatInput.addEventListener("keydown", e => {
     if (e.key === "Enter") sendMessage();
   });
-}
+
+  backBtn.onclick = () => {
+    const appShell = document.getElementById("appShell");
+    appShell.innerHTML = "";
+    appShell.classList.add("hidden");
+  };
+};
 </script>
