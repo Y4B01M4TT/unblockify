@@ -589,7 +589,6 @@ async function launchGameLocal(url) {
 }
 
 async function launchAppLocal(url) {
-  // close game shell
   gameFrame.src = "";
   gameShell.classList.remove("active");
 
@@ -599,6 +598,11 @@ async function launchAppLocal(url) {
   appShell.innerHTML = html;
   appShell.classList.remove("hidden");
   appShell.classList.add("active");
+
+  // 🔌 allow injected apps to initialize
+  if (typeof initUnblockifyAI === "function") {
+    initUnblockifyAI();
+  }
 }
   
 /* GAMES */
