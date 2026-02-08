@@ -458,7 +458,7 @@ main{
     <div class="settingsList" id="settingsList">
       <!-- Buttons go here -->
       <button class="settingsItem">Account</button>
-      <button class="settingsItem">Suggestions</button>
+      <button class="settingsItem" id="suggestionsBtn">Suggestions</button>
     </div>
 
     <div class="settingsFooter">
@@ -477,6 +477,16 @@ const closeSettings = document.getElementById("closeSettings");
 
 settingsBtn.addEventListener("click", () => {
   settingsOverlay.classList.remove("hidden");
+});
+
+const suggestionsBtn = document.getElementById("suggestionsBtn");
+
+suggestionsBtn.addEventListener("click", () => {
+  window.open(
+    "https://docs.google.com/forms/d/e/1FAIpQLSfy_fey2OeT2eU_qf4sb4levSF8bW-8irC7t_mGETI7apCT9A/viewform?usp=preview",
+    "_blank",
+    "noopener,noreferrer"
+  );
 });
 
 closeSettings.addEventListener("click", () => {
