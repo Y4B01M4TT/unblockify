@@ -457,8 +457,10 @@ main{
 
     <div class="settingsList" id="settingsList">
       <!-- Buttons go here -->
-      <button class="settingsItem">Account</button>
+      <button class="settingsItem">Account (Coming Soon!)</button>
+      <button class="settingsItem" id="discordBtn">Discord</button>
       <button class="settingsItem" id="suggestionsBtn">Suggestions</button>
+      
     </div>
 
     <div class="settingsFooter">
@@ -477,6 +479,15 @@ const closeSettings = document.getElementById("closeSettings");
 
 settingsBtn.addEventListener("click", () => {
   settingsOverlay.classList.remove("hidden");
+});
+
+const discordBtn = document.getElementById("discordBtn");
+
+discordBtn.addEventListener("click", () => {
+  window.open(
+    "https://discord.gg/Q2QJ2rm4xh",
+    "noopener,noreferrer"
+  );
 });
 
 const suggestionsBtn = document.getElementById("suggestionsBtn");
