@@ -665,6 +665,63 @@ apps.forEach(a=>{
   appsGrid.appendChild(b);
 });
 
+/* ===============================
+   U-KNOW AI CORE
+================================ */
+
+function initUnblockifyAI() {
+  const chatbox = document.getElementById("chatbox");
+  const chatInput = document.getElementById("chatInput");
+  const sendButton = document.getElementById("sendButton");
+  const backBtnAI = document.querySelector(".ai-back");
+
+  if (!chatbox || !chatInput || !sendButton || !backBtnAI) {
+    console.warn("U-Know AI not mounted yet");
+    return;
+  }
+
+  chatbox.innerHTML = "";
+
+  function addMessage(text, isUser) {
+    const div = document.createElement("div");
+    div.className =
+      "chat-message " + (isUser ? "user-message" : "assistant-message");
+    div.textContent = text;
+    chatbox.appendChild(div);
+    chatbox.scrollTop = chatbox.scrollHeight;
+  }
+
+  addMessage("Hey! I’m U-Know AI. What do you need help with today?", false);
+
+  function sendMessage() {
+    const text = chatInput.value.trim();
+    if (!text) return;
+
+    addMessage(text, true);
+    chatInput.value = "";
+
+    // Local-safe placeholder (works everywhere)
+    setTimeout(() => {
+      addMessage(
+        "AI responses activate once the site is hosted. You’re running local mode right now.",
+        false
+      );
+    }, 400);
+  }
+
+  sendButton.onclick = sendMessage;
+  chatInput.onkeydown = e => {
+    if (e.key === "Enter") sendMessage();
+  };
+
+  backBtnAI.onclick = () => {
+    appShell.innerHTML = "";
+    appShell.classList.add("hidden");
+  };
+
+  console.log("U-Know AI initialized");
+}
+  
 backBtn.onclick = () => {
   gameFrame.src = "";
   gameShell.classList.remove("active");
