@@ -309,83 +309,12 @@ main{
   padding:120px 32px 80px;
 }
 
-#appShell > .ai-shell {
-  max-width: 900px;
-  margin: 0 auto;
-  height: calc(100vh - 200px);
-}
-
 #appShell.hidden{
   display:none;
 }
 
 #appShell.active{
   display:block;
-}
-
-.ai-shell {
-  display: flex;
-  flex-direction: column;
-  height: 100%;
-  backdrop-filter: blur(14px);
-  background: var(--glass-bg);
-  border: 1px solid var(--glass-border);
-  border-radius: 18px;
-  padding: 14px;
-}
-
-.chatbox {
-  flex: 1;
-  overflow-y: auto;
-  display: flex;
-  flex-direction: column;
-  gap: 8px;
-}
-
-.chat-message {
-  max-width: 80%;
-  padding: 10px 14px;
-  border-radius: 14px;
-  font-size: 14px;
-}
-
-.user-message {
-  align-self: flex-end;
-  background: linear-gradient(135deg, #5b7cff, #8fa7ff);
-  color: white;
-}
-
-.assistant-message {
-  align-self: flex-start;
-  background: rgba(255,255,255,0.08);
-  color: #dbe4ff;
-}
-
-.input-area {
-  display: flex;
-  gap: 8px;
-  margin-top: 10px;
-}
-
-.input-area input {
-  flex: 1;
-  background: rgba(255,255,255,0.08);
-  border: 1px solid var(--glass-border);
-  color: white;
-  border-radius: 999px;
-  padding: 8px 12px;
-}
-
-.input-area button {
-  border-radius: 999px;
-}
-
-.ai-footer {
-  text-align: center;
-  font-family: var(--main-font);
-  font-size: 12px;
-  opacity: 0.6;
-  margin-top: 8px;
 }
 </style>
 </head>
@@ -609,21 +538,12 @@ async function launchGameLocal(url) {
   gameShell.classList.add("active");
 }
 
-async function launchAppLocal(url) {
-  gameFrame.src = "";
-  gameShell.classList.remove("active");
+function launchAppLocal(url) {
+  appShell.innerHTML = "";
+  appShell.classList.add("hidden");
 
-  const res = await fetch(url);
-  const html = await res.text();
-
-  appShell.innerHTML = html;
-  appShell.classList.remove("hidden");
-  appShell.classList.add("active");
-
-  // 🔌 allow injected apps to initialize
-  if (typeof initUnblockifyAI === "function") {
-    initUnblockifyAI();
-  }
+  gameFrame.src = url;
+  gameShell.classList.add("active");
 }
   
 /* GAMES */
@@ -641,6 +561,8 @@ const games=[
   {name:"Cookie Clicker",url:"games/cookie-clicker/index.html"},
   {name:"CrazyCattle3D",url:"games/crazycattle3d/index.html"},
   {name:"CrazyChicken3D",url:"games/crazychicken3d/index.html"},
+  {name:"Doom",url:"games/doom/index.html"},
+  {name:"Doom 2",url:"games/doom-2/index.html"},
   {name:"Drift Hunters",url:"games/drift-hunters/index.html"},
   {name:"Drive Mad",url:"games/drive-mad/index.html"},
   {name:"Eaglercraft (Singleplayer)",url:"games/eaglercraft-singleplayer/index.html"},
@@ -651,7 +573,13 @@ const games=[
   {name:"Friday Night Funkin'",url:"games/friday-night-funkin/index.html"},
   {name:"Geometry Dash",url:"games/geometry-dash/index.html"},
   {name:"Getaway Shootout",url:"games/getaway-shootout/index.html"},
-  {name:"Idle Dice",url:"idle-dice/index.html"},
+  {name:"Gran Turismo (PS1)",url:"games/gran-turismo/index.html"},
+  {name:"Gran Turismo 2",url:"games/gran-turismo-2/index.html"},
+  {name:"GTA: Chinatown Wars",url:"games/gta-chinatown/index.html"},
+  {name:"Idle Breakout",url:"games/idle-breakout/index.html"},
+  {name:"Idle Dice",url:"games/idle-dice/index.html"},
+  {name:"InfiniteCraft",url:"games/infinitecraft/index.html"},
+  {name:"Jumbo Mario",url:"games/jumbo-mario/index.html"},
   {name:"Moto X3M",url:"games/moto-x3m/index.html"},
   {name:"NZ: Portable",url:"games/nzp/index.html"},
   {name:"Retro Bowl",url:"games/retro-bowl/index.html"},
@@ -686,63 +614,6 @@ apps.forEach(a=>{
   b.onclick = () => launchAppLocal(a.url);
   appsGrid.appendChild(b);
 });
-
-/* ===============================
-   U-KNOW AI CORE
-================================ */
-
-function initUnblockifyAI() {
-  const chatbox = document.getElementById("chatbox");
-  const chatInput = document.getElementById("chatInput");
-  const sendButton = document.getElementById("sendButton");
-  const backBtnAI = document.querySelector(".ai-back");
-
-  if (!chatbox || !chatInput || !sendButton || !backBtnAI) {
-    console.warn("U-Know AI not mounted yet");
-    return;
-  }
-
-  chatbox.innerHTML = "";
-
-  function addMessage(text, isUser) {
-    const div = document.createElement("div");
-    div.className =
-      "chat-message " + (isUser ? "user-message" : "assistant-message");
-    div.textContent = text;
-    chatbox.appendChild(div);
-    chatbox.scrollTop = chatbox.scrollHeight;
-  }
-
-  addMessage("Hey! I’m U-Know AI. What do you need help with today?", false);
-
-  function sendMessage() {
-    const text = chatInput.value.trim();
-    if (!text) return;
-
-    addMessage(text, true);
-    chatInput.value = "";
-
-    // Local-safe placeholder (works everywhere)
-    setTimeout(() => {
-      addMessage(
-        "AI responses activate once the site is hosted. You’re running local mode right now.",
-        false
-      );
-    }, 400);
-  }
-
-  sendButton.onclick = sendMessage;
-  chatInput.onkeydown = e => {
-    if (e.key === "Enter") sendMessage();
-  };
-
-  backBtnAI.onclick = () => {
-    appShell.innerHTML = "";
-    appShell.classList.add("hidden");
-  };
-
-  console.log("U-Know AI initialized");
-}
   
 backBtn.onclick = () => {
   gameFrame.src = "";
