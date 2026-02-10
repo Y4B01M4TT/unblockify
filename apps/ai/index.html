@@ -1,32 +1,199 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8">
-  <title>U-Know AI (Unblockify AI)</title>
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta charset="UTF-8">
+<title>U-Know AI</title>
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-  <!-- Main site styles -->
-  <link rel="stylesheet" href="../../style.css">
+<style>
+/* ---------- BASE ---------- */
+html, body {
+  margin: 0;
+  height: 100%;
+  font-family: system-ui, sans-serif;
+  background: #05070d;
+  color: white;
+  overflow: hidden;
+}
+
+/* ---------- BACKGROUND ---------- */
+canvas {
+  position: fixed;
+  inset: 0;
+  z-index: 0;
+}
+
+/* ---------- PANEL ---------- */
+.panel {
+  position: relative;
+  z-index: 1;
+  max-width: 900px;
+  margin: 6vh auto;
+  background: rgba(10, 15, 30, 0.7);
+  border-radius: 16px;
+  padding: 20px;
+  box-shadow: 0 0 40px rgba(80, 140, 255, 0.2);
+}
+
+.header {
+  text-align: center;
+  margin-bottom: 10px;
+}
+
+.chatbox {
+  height: 55vh;
+  overflow-y: auto;
+  padding: 12px;
+  border-radius: 12px;
+  background: rgba(0,0,0,0.4);
+}
+
+.chat-message {
+  margin-bottom: 10px;
+  padding: 10px 14px;
+  border-radius: 10px;
+  max-width: 80%;
+  line-height: 1.4;
+}
+
+.user {
+  margin-left: auto;
+  background: rgba(0,140,255,0.35);
+}
+
+.bot {
+  background: rgba(255,255,255,0.1);
+}
+
+.input-area {
+  display: flex;
+  gap: 10px;
+  margin-top: 10px;
+}
+
+input {
+  flex: 1;
+  padding: 10px;
+  border-radius: 8px;
+  border: none;
+}
+
+button {
+  padding: 10px 16px;
+  border-radius: 8px;
+  border: none;
+  background: #4d7cff;
+  color: white;
+  cursor: pointer;
+}
+</style>
 </head>
+
 <body>
 
-  <!-- Background (same as main index, if you use particles) -->
-  <canvas id="particles"></canvas>
+<canvas id="bg"></canvas>
 
-  <div class="panel ai-panel">
-    <header class="panel-header">
-      <h1>Unblockify AI</h1>
-      <p>Ask anything</p>
-    </header>
-
-    <div id="chatbox" class="chatbox"></div>
-
-    <div class="input-area">
-      <input id="chatInput" type="text" placeholder="Ask anything…" />
-      <button id="sendButton">Send</button>
-    </div>
+<div class="panel">
+  <div class="header">
+    <h2>U-Know AI</h2>
+    <p>Ask me anything!</p>
   </div>
 
-  <script src="../../main.js"></script>
+  <div id="chatbox" class="chatbox"></div>
+
+  <div class="input-area">
+    <input id="input" placeholder="Type a question…" />
+    <button id="send">Send</button>
+  </div>
+</div>
+
+<script>
+/* ---------- BACKGROUND ---------- */
+const c = document.getElementById("bg");
+const x = c.getContext("2d");
+let w, h, p = [];
+
+function resize() {
+  w = c.width = innerWidth;
+  h = c.height = innerHeight;
+}
+window.onresize = resize;
+resize();
+
+for (let i = 0; i < 80; i++) {
+  p.push({ x: Math.random()*w, y: Math.random()*h, v: Math.random()*0.5+0.2 });
+}
+
+function draw() {
+  x.clearRect(0,0,w,h);
+  x.fillStyle = "rgba(80,140,255,0.6)";
+  p.forEach(d => {
+    d.y += d.v;
+    if (d.y > h) d.y = 0;
+    x.fillRect(d.x, d.y, 2, 6);
+  });
+  requestAnimationFrame(draw);
+}
+draw();
+
+/* ---------- AI LOGIC ---------- */
+const box = document.getElementById("chatbox");
+const input = document.getElementById("input");
+const send = document.getElementById("send");
+const KEY = "unblockify_ai_history";
+
+const history = JSON.parse(localStorage.getItem(KEY)) || [];
+
+function add(text, user=false) {
+  const d = document.createElement("div");
+  d.className = "chat-message " + (user ? "user" : "bot");
+  d.textContent = text;
+  box.appendChild(d);
+  box.scrollTop = box.scrollHeight;
+}
+
+history.forEach(m => add(m.text, m.user));
+
+if (!history.length) {
+  add("Hi! I’m U-Know AI. I can answer questions, explain things, or help with text.");
+}
+
+function save(text, user) {
+  history.push({ text, user });
+  localStorage.setItem(KEY, JSON.stringify(history));
+}
+
+async function ask(msg) {
+  try {
+    const r = await fetch(
+      "https://backend.buildpicoapps.com/aero/run/llm-api?pk=v1-Z0FBQUFBQm5IZkJDMlNyYUVUTjIyZVN3UWFNX3BFTU85SWpCM2NUMUk3T2dxejhLSzBhNWNMMXNzZlp3c09BSTR6YW1Sc1BmdGNTVk1GY0liT1RoWDZZX1lNZlZ0Z1dqd3c9PQ==",
+      {
+        method: "POST",
+        headers: {"Content-Type":"application/json"},
+        body: JSON.stringify({ prompt: msg })
+      }
+    );
+    const j = await r.json();
+    return j.status === "success" ? j.text : "Error.";
+  } catch {
+    return "Offline mode. Hosting required for full responses.";
+  }
+}
+
+send.onclick = async () => {
+  const t = input.value.trim();
+  if (!t) return;
+  input.value = "";
+  add(t, true);
+  save(t, true);
+
+  const r = await ask(t);
+  add(r);
+  save(r, false);
+};
+
+input.onkeydown = e => e.key === "Enter" && send.click();
+</script>
+
 </body>
 </html>
