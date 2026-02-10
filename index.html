@@ -187,7 +187,7 @@ main{
   inset:0;
   background:black;
   display:none;
-  z-index:8000;
+  z-index:3000;
 }
 #gameShell.active{display:block}
 
@@ -369,9 +369,6 @@ main{
 <div id="appShell" class="hidden"></div>
 
 <div id="gameShell">
-  <div id="gameTop">
-    <button id="backBtn">← Back</button>
-  </div>
   <iframe id="gameFrame"
     sandbox="allow-scripts allow-same-origin allow-pointer-lock allow-popups">
   </iframe>
@@ -442,10 +439,19 @@ settingsOverlay.addEventListener("click", (e) => {
 
 /* NAVIGATION */
 const pages = document.querySelectorAll(".page");
-document.querySelectorAll(".navLink[data-nav]:not([data-nav='settings'])").forEach(link=>{
+document.querySelectorAll(".navLink[data-nav]").forEach(link=>{
   link.onclick = () => {
+
+    // Close game/app
+    gameFrame.src = "";
+    gameShell.classList.remove("active");
+    appShell.innerHTML = "";
+    appShell.classList.add("hidden");
+
+    // Switch page
     pages.forEach(p=>p.classList.remove("active"));
     document.getElementById(link.dataset.nav)?.classList.add("active");
+
     glassWrap.classList.remove("open");
   };
 });
@@ -614,13 +620,6 @@ apps.forEach(a=>{
   appsGrid.appendChild(b);
 });
   
-backBtn.onclick = () => {
-  gameFrame.src = "";
-  gameShell.classList.remove("active");
-
-  appShell.innerHTML = "";
-  appShell.classList.add("hidden");
-};
 </script>
 
 </body>
